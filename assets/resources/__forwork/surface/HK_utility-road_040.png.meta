@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "3283ad6d-df99-4a82-836b-e774b2b92047",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "HK_utility-road_040": {
+      "ver": "1.0.3",
+      "uuid": "e4ae14c2-8068-4bf5-b480-41604dd45d70",
+      "rawTextureUuid": "3283ad6d-df99-4a82-836b-e774b2b92047",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 1.5,
+      "offsetY": 0.5,
+      "trimX": 17,
+      "trimY": 2,
+      "width": 179,
+      "height": 205,
+      "rawWidth": 210,
+      "rawHeight": 210,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

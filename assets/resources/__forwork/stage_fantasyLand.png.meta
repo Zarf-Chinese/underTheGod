@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "5a9512bd-53c3-4f9b-9835-2fa31a49e050",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "stage_fantasyLand": {
+      "ver": "1.0.3",
+      "uuid": "cbcced96-1285-4b37-9950-ebc2ac2ef7c3",
+      "rawTextureUuid": "5a9512bd-53c3-4f9b-9835-2fa31a49e050",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 4242,
+      "height": 2275,
+      "rawWidth": 4242,
+      "rawHeight": 2275,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

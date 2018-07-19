@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "09aafa6a-3745-4e5a-b393-06c752fb8b99",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "map_fantasyLand.min": {
+      "ver": "1.0.3",
+      "uuid": "7a106c40-89cd-41e7-9f2c-7a38aeb1e3e2",
+      "rawTextureUuid": "09aafa6a-3745-4e5a-b393-06c752fb8b99",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 224,
+      "height": 120,
+      "rawWidth": 224,
+      "rawHeight": 120,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

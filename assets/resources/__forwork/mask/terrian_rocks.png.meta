@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "0abe07ce-37f6-499c-bf4a-117a854ef4a8",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "terrian_rocks": {
+      "ver": "1.0.3",
+      "uuid": "1552dcbf-6252-4752-89d8-410650466406",
+      "rawTextureUuid": "0abe07ce-37f6-499c-bf4a-117a854ef4a8",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 17,
+      "trimY": 4,
+      "width": 177,
+      "height": 203,
+      "rawWidth": 210,
+      "rawHeight": 210,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

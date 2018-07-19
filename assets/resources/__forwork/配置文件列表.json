@@ -1,0 +1,8 @@
+{
+    "相对路径":"assets/resources/game",
+    "故事线配置":"/stage/stage.config.json",
+    "游戏对象配置":":/object/?.config.json",
+    "游戏属性配置":":/status/?.config.json",
+    "":"",
+    "":""
+}
