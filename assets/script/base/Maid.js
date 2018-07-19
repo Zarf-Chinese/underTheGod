@@ -7,7 +7,10 @@ var Event = function (key, args) {
     this.key = key;
     this.args = args;
 }
-
+var GameDataItem="test";
+var PObject=require("./PObject")
+var Game=require("../PObject/Game")
+var GameController=require("../controller/GameController")
 
 /**
  * @SingleInstance
@@ -39,10 +42,26 @@ var Event = function (key, args) {
  * ```
  */
 var Maid = {
+    game:null,
     pushedEvents: [],
     eventlisteners: [],
-    init() {
 
+    /**
+     * 开始整个应用，读取用户数据并创建游戏
+     * @param context 开始应用的上下文组件
+     */
+    start(context) {
+        const gameData = JSON.parse(cc.sys.localStorage.getItem(GameDataItem));
+        this.game=PObject.create(Game,gameData);
+        GameController.start(this.game);
+    },
+    /**
+     * 结束整个应用，结束当前游戏进程并存储用户数据
+     */
+    exit(context){
+        GameController.exit(this,game);
+        const gameData =PObject.save(this.game);
+        cc.sys.localStorage.setItem(GameDataItem,gameData);
     },
     /**
      * 刷新 Maid 逻辑进程

@@ -3,6 +3,13 @@ var PObject = cc.Class({
     name: "PObject",
 
     statics: {
+        create(clazz,data){
+            if(cc.isChildClassOf(clazz,PObject)||clazz===PObject){
+                let ret=new clazz();
+                PObject.load(ret,data);
+                return ret;
+            }
+        },
         load(obj, data) {
             if (obj instanceof PObject) {
                 obj._load(data);

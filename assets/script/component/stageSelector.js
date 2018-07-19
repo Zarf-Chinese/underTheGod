@@ -1,13 +1,12 @@
-
-var StageSelector=cc.Class({
+var StageSelector = cc.Class({
     extends: cc.Component,
 
     properties: {
-        selPrefab:{
-            default:null,
-            type:cc.Prefab,
+        selPrefab: {
+            default: null,
+            type: cc.Prefab,
         },
-        selections:[]
+        selections: []
         // foo: {
         //     // ATTRIBUTES:
         //     default: null,        // The default value will be used only when the component attaching
@@ -24,6 +23,11 @@ var StageSelector=cc.Class({
         //     }
         // },
     },
+    onLoad(){
+        for(let i=0;i<10;i++){
+            this.pushStageSelection(i);
+        }
+    },
 
     /**
      * 通过一个场景配置的id，添入一个场景选项
@@ -32,30 +36,46 @@ var StageSelector=cc.Class({
      * 只不过游戏原型存储在stage.config.json文件中，而场景记录的配置存储在用户信息中
      * @param {number} stageIndex 场景序号
      */
-    pushStageSelection(stageId){
-        let selection=cc.instantiate(this.selPrefab)
-        this.initSelection(selection.getComponent(cc.Button),stageId);
-        this.node.addChild(selection);
+    pushStageSelection(stageId) {
+        let selection = cc.instantiate(this.selPrefab)
+        if (this.initSelection(selection, stageId))
+            this.node.addChild(selection);
     },
     /**
-     * 通过 场景配置的序号 来初始化一个 button 控件，
-     * 点击 button 所在节点即可进入 该场景
-     * @param {cc.Button} selectionButton
+     * 通过 场景配置的序号 来初始化一个选项按钮
+     * 点击选项按钮所在节点即可进入 该场景
+     * @param {cc.Node} selectionNode
      * @param {number} id 场景配置的序号
      */
-    initSelection(selectionButton,id){
+    initSelection(selectionNode, id) {
+        /**
+         * 通过 Maid 管理器获取游戏实例，再通过游戏控制器获取目标 stage 的信息
+         * 如果未找到该实例，则失败
+         * 使 selectionNode 内部的 label 标注场景信息
+         */
+        let stage = gameController.getStage(Maid.game, id)
+        if (!stage) return false;
+        selectionNode.getComponent(cc.Label).string = stageController.getInformation(stage);
+
+
         /* 
-        selectionButton 内部预置会在点击时调用 this.select 函数
-        给 selectionButton 绑定该 stage 的 id ，
-        使点击 selectionButton 所在节点时，进入该场景 
+        selectionNode 内部预置了一个空的 cc.Button 组件
+        给该组件绑定 select 函数
+        使点击 selectionNode 时，进入该场景 
         */
-        selectionButton.clickEvents[0].customEventData=id;
+        var eventHandler = new cc.Component.EventHandler(this.node, "StageSelector", "select")
+        eventHandler.customEventData=id
+        selectionNode.getComponent(cc.Button).clickEvents.push(eventHandler)
+        return true;
     },
+    //选择某场景的回调函数
+    _selectCallback(event,id){this.select(id);},
     /**
      * 根据场景的id 选择进入该场景
      * @param {string} id 场景id
      */
-    select(id){
+    select(id) {
         //fixme
+        console.log("entering... : " + id)
     },
 });

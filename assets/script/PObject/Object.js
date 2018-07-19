@@ -26,6 +26,14 @@ var Object = cc.Class({
         node: null,
         attrs: [Attr],
     },
+    /**
+     *通过一个配置初始化一个实例
+     *
+     * @param {Object.Config} config
+     */
+    _initByConfig(config){
+
+    },
     _load(data) {
         if(data.hasOwnProperty("type"))
         {
@@ -37,7 +45,7 @@ var Object = cc.Class({
         if(data.hasOwnProperty("attrs")){
             for (let index = 0; index < data.attrs.length; index++) {
                 const attr = data.attrs[index];
-                this.attrs.push(PObject.load(Attr,attr))
+                this.attrs.push(PObject.create(Attr,attr))
             }
         }
     },

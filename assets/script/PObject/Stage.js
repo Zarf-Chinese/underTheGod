@@ -7,6 +7,7 @@ var Stage=cc.Class({
             name:"StageConfig",
             extends: PObject,
             properties:{
+                type:-1,
                 /**
                  * 记录了基本的游戏对象，但并不记录游戏对象的属性的具体数值。
                  * 这些游戏对象的属性将根据属性的配置而随机确定
@@ -29,12 +30,19 @@ var Stage=cc.Class({
     //fixme
     properties: {
         type:-1,
-        map:"default",
         objects:[Object],
         /**
          * 游戏主人公所属阵营
          */
         hero:-1
+    },
+    /**
+     *通过一个配置初始化一个实例
+     *
+     * @param {Stage.Config} config
+     */
+    _initByConfig(config){
+
     },
 });
 module.exports=Stage;
