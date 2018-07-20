@@ -8,11 +8,17 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 var Maid=require("../base/Maid");
-cc.Class({
+
+/**
+ * 应用程序的上下文组件，
+ * 持有整个应用的重要部件，
+ * 并作为游戏主循环的入口
+ */
+var Context=cc.Class({
     extends: cc.Component,
 
     properties: {
-        gameSelectorNode:{
+        stageSelectorNode:{
             default:null,
             type:cc.Node
         }
@@ -42,7 +48,9 @@ cc.Class({
     },
     onDestroy(){
         Maid.exit(this);
-    }
+    },
 
-    // update (dt) {},
+    update (dt) {
+        Maid.update(this,dt);
+    },
 });

@@ -1,0 +1,11 @@
+{"stageConfigs":[
+    {
+        "index":1001,
+        "type":0,
+        "name":"bilibili",
+        "csv":"test",
+        "source":[],
+        "map":"map_fantasyLand"
+    }
+]
+}

@@ -3,14 +3,14 @@ var EventLisener = function (key, callback, life) {
     this.callback = callback;
     this.life = life;
 }
-var Event = function (key, args) {
+var Event = function (key, arg) {
     this.key = key;
-    this.args = args;
+    this.arg = arg;
 }
-var GameDataItem="test";
-var PObject=require("./PObject")
-var Game=require("../PObject/Game")
-var GameController=require("../controller/GameController")
+var GameDataItem = "test";
+var PObject = require("./PObject")
+var Game = require("../PObject/Game")
+var GameController = require("../controller/GameController")
 
 /**
  * @SingleInstance
@@ -19,6 +19,7 @@ var GameController=require("../controller/GameController")
  * @Usages
  * ```
  * 处理游戏公开事件
+ * 掌握游戏循环进程
  * ```
  * @example
  * ``` js
@@ -42,32 +43,55 @@ var GameController=require("../controller/GameController")
  * ```
  */
 var Maid = {
-    game:null,
+    game: null,
     pushedEvents: [],
     eventlisteners: [],
+    defaultGameDataUrl: "",
+
+    loadDefaultGameData() {
+
+    },
 
     /**
      * 开始整个应用，读取用户数据并创建游戏
-     * @param context 开始应用的上下文组件
+     * @param context 应用的上下文组件
      */
     start(context) {
-        const gameData = JSON.parse(cc.sys.localStorage.getItem(GameDataItem));
-        this.game=PObject.create(Game,gameData);
-        GameController.start(this.game);
+        //注册 加载游戏数据完成后的回调函数
+        this.listenToEvent("afterGameDataLoaded", function (gameData) {
+            this.game = PObject.create(Game, gameData);
+            //test
+            {
+                console.log(this.game);
+            }
+            GameController.start(this.game, context);
+            GameController.getReadyToSelectStage(this.game);
+            return true;
+        }.bind(this),1);
+
+        //加载游戏数据
+        let gameData = JSON.parse(cc.sys.localStorage.getItem(GameDataItem));
+        //若未能加载游戏数据，则尝试从 gameData.json 中新建一份默认的游戏数据
+        gameData ? this.pushEvent("afterGameDataLoaded", gameData) :
+            cc.loader.loadRes("gameData", function (event, data) { Maid.pushEvent("afterGameDataLoaded", data) });
+
+
     },
     /**
      * 结束整个应用，结束当前游戏进程并存储用户数据
+     * @param context 应用的上下文组件
      */
-    exit(context){
-        GameController.exit(this,game);
-        const gameData =PObject.save(this.game);
-        cc.sys.localStorage.setItem(GameDataItem,gameData);
+    exit(context) {
+        GameController.exit(this, game);
+        let gameData = PObject.save(this.game, context);
+        cc.sys.localStorage.setItem(GameDataItem, gameData);
     },
     /**
      * 刷新 Maid 逻辑进程
+     * @param context 应用的上下文组件
      * @param {number} dt 与上一次刷新之间的间隔时间
      */
-    update(dt) {
+    update(context, dt) {
         this.dealWithAllEvents();
     },
     /**
@@ -103,8 +127,8 @@ var Maid = {
     /**
      * 处理所有的事件
      */
-    dealWithAllEvents(){
-        for (let index = this.pushedEvents.length; index >=0; index--) {
+    dealWithAllEvents() {
+        for (let index = this.pushedEvents.length - 1; index >= 0; index--) {
             const event = this.pushedEvents[index];
             this.dealWithEvent(event);
         }
@@ -117,15 +141,16 @@ var Maid = {
     dealWithEvent(event) {
         let listeners = this.getEventListeners(event.key)
         let over = false;
-        for (let i = 0; i < listeners.length; i++) {
+        for (let i = listeners.length-1; i >=0 ; i--) {
             const listener = listeners[i];
             let callable = true;
             //如果life是数字，则检查剩余有效次数。根据需要销毁监听器
-            if (listener.life instanceof number) {
+            if (typeof(listener.life)=="number") {
                 if (--listener.life <= 0) {
-                    if (listener.life < 0)
+                    if (listener.life < 0){
                         //不执行监听器
                         callable = false;
+                    }
                     //销毁监听器
                     this.eventlisteners.splice(this.eventlisteners.indexOf(listener));
                 }

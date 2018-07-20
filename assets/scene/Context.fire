@@ -464,6 +464,8 @@
       "__id__": 2
     },
     "_enabled": true,
-    "gameSelectorNode": null
+    "stageSelectorNode": {
+      "__id__": 5
+    }
   }
 ]

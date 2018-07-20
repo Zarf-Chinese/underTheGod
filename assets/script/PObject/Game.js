@@ -20,9 +20,10 @@ var Game=cc.Class({
     extends:PObject,
     //fixme
     properties: {
-        stageConfigs:[Stage.Config],
+        //stageConfigs:[Stage.Config],
     },
     _load(data){
+        this.stageConfigs=[]
         if(data.hasOwnProperty("stageConfigs")){
             data.stageConfigs.forEach(stageConfigData => {
                 this.stageConfigs.push(PObject.create(Stage.Config,stageConfigData))
@@ -36,6 +37,12 @@ var Game=cc.Class({
             ret.stageConfigs.push(PObject.save(stageConfig));
         })
         return ret;
+    },
+    /**
+     * 开始游戏
+     */
+    _start(){
+
     },
     /**
      * 退出游戏

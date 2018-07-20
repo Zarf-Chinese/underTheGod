@@ -1,3 +1,6 @@
+var GameController=require("../controller/GameController")
+var StageController=require("../controller/StageController")
+var Maid=require("../base/Maid")
 var StageSelector = cc.Class({
     extends: cc.Component,
 
@@ -24,9 +27,6 @@ var StageSelector = cc.Class({
         // },
     },
     onLoad(){
-        for(let i=0;i<10;i++){
-            this.pushStageSelection(i);
-        }
     },
 
     /**
@@ -36,9 +36,9 @@ var StageSelector = cc.Class({
      * 只不过游戏原型存储在stage.config.json文件中，而场景记录的配置存储在用户信息中
      * @param {number} stageIndex 场景序号
      */
-    pushStageSelection(stageId) {
+    pushStageSelection(stageIndex) {
         let selection = cc.instantiate(this.selPrefab)
-        if (this.initSelection(selection, stageId))
+        if (this.initSelection(selection, stageIndex))
             this.node.addChild(selection);
     },
     /**
@@ -53,17 +53,18 @@ var StageSelector = cc.Class({
          * 如果未找到该实例，则失败
          * 使 selectionNode 内部的 label 标注场景信息
          */
-        let stage = gameController.getStage(Maid.game, id)
+        let stage = GameController.getStage(Maid.game, id)
         if (!stage) return false;
-        selectionNode.getComponent(cc.Label).string = stageController.getInformation(stage);
-
-
+        selectionNode.getComponent(cc.Label).string = StageController.getInformation(stage);
         /* 
         selectionNode 内部预置了一个空的 cc.Button 组件
         给该组件绑定 select 函数
         使点击 selectionNode 时，进入该场景 
         */
-        var eventHandler = new cc.Component.EventHandler(this.node, "StageSelector", "select")
+        var eventHandler = new cc.Component.EventHandler()
+        eventHandler.target=this.node;
+        eventHandler.component="stageSelector";
+        eventHandler.handler="_selectCallback";
         eventHandler.customEventData=id
         selectionNode.getComponent(cc.Button).clickEvents.push(eventHandler)
         return true;

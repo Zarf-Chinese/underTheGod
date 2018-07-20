@@ -3,10 +3,10 @@ var PObject = cc.Class({
     name: "PObject",
 
     statics: {
-        create(clazz,data){
-            if(cc.isChildClassOf(clazz,PObject)||clazz===PObject){
-                let ret=new clazz();
-                PObject.load(ret,data);
+        create(clazz, data) {
+            if (cc.isChildClassOf(clazz, PObject) || clazz === PObject) {
+                let ret = new clazz();
+                PObject.load(ret, data);
                 return ret;
             }
         },
@@ -33,7 +33,7 @@ var PObject = cc.Class({
                 if (this[key] instanceof PObject)
                     this[key]._load(elem)
                 else
-                    this[key] =cc.instantiate(elem) ;
+                    this[key] = elem;
             }
         }
     },

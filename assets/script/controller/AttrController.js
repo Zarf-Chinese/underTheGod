@@ -57,6 +57,6 @@ var AttrController={
         attr.delta+=alter;
     }
 }
-AttrController.setDefaultConfig("default");
 AttrController.registConfig(new Attr.Config());
+AttrController.setDefaultConfig("default");
 module.exports=AttrController;
