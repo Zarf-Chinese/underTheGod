@@ -9,7 +9,7 @@ var Event = function (key, arg) {
 }
 var GameDataItem = "test";
 var PObject = require("./PObject")
-var Game = require("../PObject/Game")
+var StageController= require("../controller/StageController")
 var GameController = require("../controller/GameController")
 
 /**
@@ -48,22 +48,17 @@ var Maid = {
     eventlisteners: [],
     defaultGameDataUrl: "",
 
-    loadDefaultGameData() {
-
-    },
-
     /**
      * 开始整个应用，读取用户数据并创建游戏
      * @param context 应用的上下文组件
      */
     start(context) {
+        //给予各类controller 赋予上下文
+        StageController.context=context;
+        GameController.context=context;
         //注册 加载游戏数据完成后的回调函数
         this.listenToEvent("afterGameDataLoaded", function (gameData) {
-            this.game = PObject.create(Game, gameData);
-            //test
-            {
-                console.log(this.game);
-            }
+            this.game = PObject.create(GameController.Type, gameData);
             GameController.start(this.game, context);
             GameController.getReadyToSelectStage(this.game);
             return true;
@@ -152,7 +147,7 @@ var Maid = {
                         callable = false;
                     }
                     //销毁监听器
-                    this.eventlisteners.splice(this.eventlisteners.indexOf(listener));
+                    this.eventlisteners.splice(this.eventlisteners.indexOf(listener),1);
                 }
             }
             if (callable && listener.callback(event.arg)) {
@@ -164,7 +159,7 @@ var Maid = {
         }
         if (over) {
             //结束事件
-            this.pushedEvents.splice(this.pushedEvents.indexOf(event));
+            this.pushedEvents.splice(this.pushedEvents.indexOf(event),1);
         }
     }
 }

@@ -6,16 +6,15 @@ var Game = require("../PObject/Game");
  * Maid（游戏的核心管理）持有当前的游戏实例，并通过GameController 来实现对游戏的控制
  */
 var GameController = {
+    Type:Game,
     context:null,
 
     /**
      * 进入目标游戏
      * 将经过反序列化后所得到的数据信息填充到 view 层
      * @param {Game} game 目标游戏
-     * @param context 应用程序的上下文组件
      */
-    start(game, context) {
-        this.context=context;
+    start(game) {
         game._start();
     },
     /**
@@ -34,7 +33,7 @@ var GameController = {
      * @param {Game} game 目标游戏
      * @param {number} stageIndex 场景序号
      */
-    getStage(game,stageIndex){
+    getStageConfig(game,stageIndex){
         return game.stageConfigs.find((v,i)=>{
             return v.index==stageIndex;
         },this);
@@ -53,7 +52,7 @@ var GameController = {
         if (!stageSelector) return;
         {
             game.stageConfigs.forEach(stageConfig => {
-                stageSelector.pushStageSelection(stageConfig.index);
+                stageSelector.pushStageSelection(stageConfig);
             });
         }
     },

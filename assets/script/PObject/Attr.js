@@ -36,14 +36,6 @@ var Attr = cc.Class({
         value: 0,
         delta: 0
     },
-    /**
-     *通过一个配置初始化一个实例
-     *
-     * @param {Attr.Config} config
-     */
-    _initByConfig(config){
-
-    },
 
     /**
      * 每度过一天，刷新一次，根据 delta 改变 value 的值

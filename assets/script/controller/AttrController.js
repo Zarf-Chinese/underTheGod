@@ -8,6 +8,15 @@ var AttrController={
     configs:[],//类型配置集，内含一个默认类型配置
     
     default:"default",//默认类型配置名
+    
+    /**
+     *通过一个配置初始化一个实例
+     * @param {Attr} attr
+     * @param {Attr.Config} config
+     */
+    _initByConfig(attr,config){
+
+    },
 
     /**
      * 根据一个属性的配置创建一个属性实例

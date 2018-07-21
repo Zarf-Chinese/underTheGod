@@ -23,7 +23,7 @@ var Game=cc.Class({
         //stageConfigs:[Stage.Config],
     },
     _load(data){
-        this.stageConfigs=[]
+        this.stageConfigs=[];
         if(data.hasOwnProperty("stageConfigs")){
             data.stageConfigs.forEach(stageConfigData => {
                 this.stageConfigs.push(PObject.create(Stage.Config,stageConfigData))
@@ -32,7 +32,7 @@ var Game=cc.Class({
     },
     _save(){
         let ret={};
-        ret.stageConfigs=[]
+        ret.stageConfigs=[];
         this.stageConfigs.forEach(stageConfig=>{
             ret.stageConfigs.push(PObject.save(stageConfig));
         })

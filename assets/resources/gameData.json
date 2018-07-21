@@ -4,7 +4,7 @@
         "type":0,
         "name":"bilibili",
         "csv":"test",
-        "source":[],
+        "objects":[],
         "map":"map_fantasyLand"
     }
 ]

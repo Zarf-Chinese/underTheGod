@@ -22,7 +22,7 @@ var Stage=cc.Class({
                 /**
                  * 非随机生成的游戏对象数据，记录了关于这个对象的所有属性
                  */
-                source:[]
+                objects:[]
             }
 
         })
@@ -33,18 +33,31 @@ var Stage=cc.Class({
     properties: {
         type:-1,
         objects:[Object],
+        map:null,
         /**
          * 游戏主人公所属阵营
          */
         hero:-1
     },
-    /**
-     *通过一个配置初始化一个实例
-     *
-     * @param {Stage.Config} config
-     */
-    _initByConfig(config){
 
+    _load(data){
+        this.type=data.type;
+        this.objects=[];
+        if(data.hasOwnProperty("objects")){
+            data.objects.forEach(objectData => {
+                this.objects.push(PObject.create(Object,objectData))
+            });
+        }
+        this.map=data.map;
     },
+    _save(){
+        let ret={};
+        ret.type=this.type;
+        ret.objects=[];
+        this.objects.forEach(object=>{
+            ret.objects.push(PObject.save(object));
+        })
+        ret.map=this.map;
+    }
 });
 module.exports=Stage;

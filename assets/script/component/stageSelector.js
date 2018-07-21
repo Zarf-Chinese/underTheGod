@@ -30,32 +30,26 @@ var StageSelector = cc.Class({
     },
 
     /**
-     * 通过一个场景配置的id，添入一个场景选项
+     * 通过一个场景配置，添入一个场景选项
      * 这个场景配置可能是一个标准的场景原型配置，也可能是过去玩过的场景记录
      * 在 UTG 中，场景记录（游戏记录）和原型是具有同等意义的，从序列化的格式到处理方法都是一致的。
      * 只不过游戏原型存储在stage.config.json文件中，而场景记录的配置存储在用户信息中
-     * @param {number} stageIndex 场景序号
+     * @param {Stage.Config} stageConfig 场景配置
      */
-    pushStageSelection(stageIndex) {
+    pushStageSelection(stageConfig) {
         let selection = cc.instantiate(this.selPrefab)
-        if (this.initSelection(selection, stageIndex))
+        if (this.initSelection(selection, stageConfig))
             this.node.addChild(selection);
     },
     /**
-     * 通过 场景配置的序号 来初始化一个选项按钮
+     * 通过 场景配置 来初始化一个选项按钮
      * 点击选项按钮所在节点即可进入 该场景
      * @param {cc.Node} selectionNode
-     * @param {number} id 场景配置的序号
+     * @param {Stage.Config} stageConfig 场景配置
      */
-    initSelection(selectionNode, id) {
-        /**
-         * 通过 Maid 管理器获取游戏实例，再通过游戏控制器获取目标 stage 的信息
-         * 如果未找到该实例，则失败
-         * 使 selectionNode 内部的 label 标注场景信息
-         */
-        let stage = GameController.getStage(Maid.game, id)
-        if (!stage) return false;
-        selectionNode.getComponent(cc.Label).string = StageController.getInformation(stage);
+    initSelection(selectionNode, stageConfig) {
+        if (!stageConfig) return false;
+        selectionNode.getComponent(cc.Label).string = StageController.getInformation(stageConfig);
         /* 
         selectionNode 内部预置了一个空的 cc.Button 组件
         给该组件绑定 select 函数
@@ -65,7 +59,7 @@ var StageSelector = cc.Class({
         eventHandler.target=this.node;
         eventHandler.component="stageSelector";
         eventHandler.handler="_selectCallback";
-        eventHandler.customEventData=id
+        eventHandler.customEventData=stageConfig.index
         selectionNode.getComponent(cc.Button).clickEvents.push(eventHandler)
         return true;
     },
@@ -76,7 +70,12 @@ var StageSelector = cc.Class({
      * @param {string} id 场景id
      */
     select(id) {
-        //fixme
-        console.log("entering... : " + id)
+        //ImproveMe 后期可以加入切换画面
+        let stage=StageController.createByConfig(GameController.getStageConfig(Maid.game,id))
+        //StageCOntroller.createByConfig 内部使用异步加载策略，故需要监听加载正式完成的事件
+        Maid.listenToEvent("stageLoaded",function(){
+            console.log(stage);
+            return;
+        }.bind(this),1);
     },
 });
