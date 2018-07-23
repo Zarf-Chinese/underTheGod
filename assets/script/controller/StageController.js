@@ -1,6 +1,8 @@
 var Stage = require("../PObject/Stage")
 var Controller = require("../base/Controller");
-var Util=require("../util/util")
+var ObjectController = require("./ObjectController");
+var AttrController=require("./AttrController")
+var Util = require("../util/util")
 var StageController = {
     context: null,
     __proto__: Controller,
@@ -12,7 +14,7 @@ var StageController = {
 
     /**
      *通过一个配置初始化一个实例
-     * @attention 该初始化函数使用异步加载的方法，在加载完成后会触发 "stageLoaded" 事件，注意接收。
+     * @attention 该初始化函数使用异步加载的方法，在加载完成后会触发 "stageReadyToEnter" 事件，注意接收。
      * @param {Stage} stage
      * @param {Stage.Config} config
      */
@@ -22,26 +24,42 @@ var StageController = {
          * 可以使用config 作为数据，初步初始化一个场景
          */
         Stage.load(stage, config);
-        if (config.csv) {
-            //若 csv存在，则试图从csv 中为场景添入自动化生成的对象
-            this.context.Maid.listenToEvent("csvLoaded", function (data) {
-                if (data) {
-                    //get objects from csv
-                    this.addObjectsFromCsv(stage, data);
-                }
-                //加载完成
-                this.context.Maid.pushEvent("stageLoaded");
+        //在进入场景时，执行更多加载任务
+        this.context.Maid.listenToEvent("enterStage" + config.index, function () {
+            this.context.Maid.listenToEvent("attrConfigAssetLoaded"+config.attrAsset,function(){
+                //为场景加载对象配置后，执行生成对象等任务
+                this.context.Maid.listenToEvent("objConfigAssetLoaded" + config.objectAsset, function () {
+                    if (config.csv) {
+                        //若 csv存在，则试图从csv 中为场景添入自动化生成的对象
+                        //csv 加载完成后，为 场景添入对象
+                        this.context.Maid.listenToEvent("csvLoaded" + config.csv, function (data) {
+                            if (data) {
+                                //get objects from csv
+                                this.addObjectsFromCsv(stage, data);
+                            }
+                            //完成加载场景
+                            this.context.Maid.pushEvent("stageReadyToEnter");
+                            return true;
+                        }.bind(this), 1);
+                        //加载 csv 文件，并触发事件
+                        cc.loader.loadRes("stage/" + config.csv, function (event, data) {
+                            this.context.Maid.pushEvent("csvLoaded" + config.csv, data);
+                        }.bind(this));
+                    } else {
+                        //完成加载场景
+                        this.context.Maid.pushEvent("stageReadyToEnter");
+                    }
+                    return true;
+                }.bind(this), 1);
+                //加载 场景所需的对象配置
+                ObjectController.reloadConfig(config.objectAsset);
                 return true;
-            }.bind(this), 1);
-            cc.loader.loadRes("stage/"+config.csv, function (event, data) {
-                this.context.Maid.pushEvent("csvLoaded", data);
-            }.bind(this));
-        }else
-        {
-            //加载完成
-            this.context.Maid.pushEvent("stageLoaded");
-        }
-        
+            }.bind(this),1);
+            AttrController.loadConfig(config.attrAsset);
+        }.bind(this), 1)
+
+
+
     },
 
     /**
@@ -83,9 +101,61 @@ var StageController = {
      * @param {Stage} stage 目标场景
      * @param {string} csv csvData
      */
-    addObjectsFromCsv(stage, csv){
-        let data=Util.data.getDataFromCSV(csv,function(data){if(data)return Number.parseInt(data)},'\n',',','/')
-        //fixme add objects
+    addObjectsFromCsv(stage, csv) {
+        let data = Util.data.getDataFromCSV(csv, function (data) { if (data) return Number.parseInt(data) }, '\n', ',', '/')
+        console.log(data);
+        //考虑到 csv 中的对象横纵限制数量与csv对象横纵限制数量不符的情况，这里先将多有对象全部加载，之后再在加载地图时忽略、删去部分对象数据
+        for (let _y = 0; _y < data.length; _y++) {
+            let row = data[_y];
+            if (row && !Util.array.isDeepEmpty(row))
+                //如果 目标行存在 且 不为空
+                for (let _x = 0; _x < row.length; _x++) {
+                    let tileData = row[_x];
+                    if (tileData && !Util.array.isDeepEmpty(tileData)) {
+                        tileData.forEach(objType => {
+                            StageController.addObjectByKey(stage, objType, _x, _y);
+                        })
+                    }
+                }
+        }
+        /* for (let _y = 0; _y < this.context.tileAmount.y; _y++) {
+            let row = data[_y];
+            if (row && !Util.array.isDeepEmpty(row))
+                //如果 目标行存在 且 不为空
+                for (let _x = 0; _x < this.context.tileAmount.x; _x++) {
+                    let tileData = row[_x];
+                    if (tileData && !Util.array.isDeepEmpty(tileData)) {
+                        tileData.forEach(objType => {
+                            StageController.addObjectByKey(objType, _x, _y);
+                        })
+                    }
+                }
+        } */
+    },
+    /**
+     * 在某位置上根据一个已注册过的对象类型添入一个对象
+     * fixme 考虑国别
+     * @param {Stage} stage 目标场景
+     * @param {number} objKey 所需添入的对象的键值
+     * @param {number} x 添入位置x
+     * @param {number} y 添入位置y
+     */
+    addObjectByKey(stage, objKey, x, y) {
+        let object = ObjectController.createByKey(objKey);
+        if (object) {
+            ObjectController.setTilePos(object, x, y);
+            StageController.addObject(stage, object);
+        }
+    },
+
+    /**
+     * 给目标场景添加一个对象 
+     * @param {Stage} stage 目标场景
+     * @param {Object} object 要被添加的对象
+     */
+    addObject(stage, object) {
+        //fixme 检查是否出现了同类对象位置重合的情况
+        stage.objects.push(object);
     }
 }
 StageController.registConfig(new Stage.Config());

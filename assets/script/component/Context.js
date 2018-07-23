@@ -27,13 +27,27 @@ var Context=cc.Class({
         //纹理地图，指向游戏的地图组件
         tiledMap:{
             default:null,
-            type:cc.TiledMap
+            type:cc.TiledMap,
+            notify(old){
+                if(this.tiledMap){
+                    if(old!=this.tiledMap)Maid.pushEvent("tiledMapResetted");
+                }
+                else Maid.pushEvent("tiledMapCleared");
+            },
         },
         //特指地图中的对象层节点
         objMapNode:{
             default:null,
             type:cc.Node,
+        },
+        //纹理地图中的地块横纵数量
+        tileAmount:cc.Vec2,
+
+        objConfigAtlas:{
+            default:null,
+            type:cc.SpriteAtlas
         }
+        
     },
 
     start () {
@@ -48,3 +62,4 @@ var Context=cc.Class({
         Maid.update(this,dt);
     },
 });
+module.exports=Context;

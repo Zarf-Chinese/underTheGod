@@ -9,6 +9,8 @@ var Stage=cc.Class({
             properties:{
                 index:1000,
                 type:-1,
+                attrAsset:null,
+                objectAsset:null,
                 name:"default",
                 /**
                  * 记录了基本的游戏对象，但并不记录游戏对象的属性的具体数值。
@@ -32,6 +34,8 @@ var Stage=cc.Class({
     //fixme
     properties: {
         type:-1,
+        attrAsset:null,
+        objectAsset:null,
         objects:[Object],
         map:null,
         /**
@@ -48,6 +52,8 @@ var Stage=cc.Class({
                 this.objects.push(PObject.create(Object,objectData))
             });
         }
+        this.objectAsset=data.objectAsset;
+        this.attrAsset=data.attrAsset;
         this.map=data.map;
     },
     _save(){
@@ -57,7 +63,10 @@ var Stage=cc.Class({
         this.objects.forEach(object=>{
             ret.objects.push(PObject.save(object));
         })
+        ret.objectAsset=this.objectAsset;
+        ret.attrAsset=this.attrAsset;
         ret.map=this.map;
+        return ret;
     }
 });
 module.exports=Stage;

@@ -11,7 +11,8 @@ var GameDataItem = "test";
 var PObject = require("./PObject")
 var StageController= require("../controller/StageController")
 var GameController = require("../controller/GameController")
-
+var ObjectController=require("../controller/ObjectController")
+var AttrController=require("../controller/AttrController")
 /**
  * @SingleInstance
  * @Controller
@@ -54,8 +55,11 @@ var Maid = {
      */
     start(context) {
         //给予各类controller 赋予上下文
+        AttrController.context=context;
+        ObjectController.context=context;
         StageController.context=context;
         GameController.context=context;
+
         //注册 加载游戏数据完成后的回调函数
         this.listenToEvent("afterGameDataLoaded", function (gameData) {
             this.game = PObject.create(GameController.Type, gameData);
@@ -96,6 +100,7 @@ var Maid = {
      */
     pushEvent(key, arg) {
         this.pushedEvents.push(new Event(key, arg));
+        console.log("New event happedned : %s",key);
     },
     /**
      * 注册一个事件监听器
@@ -105,6 +110,7 @@ var Maid = {
      */
     listenToEvent(key, callback, life) {
         this.eventlisteners.push(new EventLisener(key, callback, life));
+        console.log("Add new listened event: %s",key);
     },
     /**
      * 根据事件的关键词获取与之相联系的所有监听器

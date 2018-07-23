@@ -67,15 +67,9 @@ var StageSelector = cc.Class({
     _selectCallback(event,id){this.select(id);},
     /**
      * 根据场景的id 选择进入该场景
-     * @param {string} id 场景id
+     * @param {number} id 场景id
      */
     select(id) {
-        //ImproveMe 后期可以加入切换画面
-        let stage=StageController.createByConfig(GameController.getStageConfig(Maid.game,id))
-        //StageCOntroller.createByConfig 内部使用异步加载策略，故需要监听加载正式完成的事件
-        Maid.listenToEvent("stageLoaded",function(){
-            console.log(stage);
-            return;
-        }.bind(this),1);
+        GameController.enterStageById(Maid.game,id);
     },
 });

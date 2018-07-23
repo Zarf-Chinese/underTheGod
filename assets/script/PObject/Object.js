@@ -21,7 +21,7 @@ var Object = cc.Class({
     name: "Object",
     extends: PObject,
     properties: {
-        type: -1,
+        type: "noName",
         pos: cc.Vec2,
         node: null,
         attrs: [Attr],

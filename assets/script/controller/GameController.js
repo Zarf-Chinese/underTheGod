@@ -1,5 +1,5 @@
 var Game = require("../PObject/Game");
-
+var StageController=require("./StageController");
 /**
  * 游戏控制器，
  * 由于不需要通过配置来生成游戏，顾不需要继承 Controller
@@ -56,6 +56,34 @@ var GameController = {
             });
         }
     },
+    /**
+     * 进入目标场景。
+     * 游戏只能同时进入一个场景，
+     * 若之前已经处在某一个场景中，则会先退出该场景
+     * @param {Game} game 目标游戏
+     * @param {number} id 目标场景的 id
+     */
+    enterStageById(game,id){
+        //ImproveMe 后期可以加入切换画面
+        //fixme 退出之前的场景
+        let stage=StageController.createByConfig(GameController.getStageConfig(game,id));
+        this.context.Maid.listenToEvent("stageReadyToEnter",function(){
+            GameController._enterStage(game,stage)
+        },1)
+        this.context.Maid.pushEvent("enterStage"+id);
+    },
+    /**
+     * 正式进入一个场景，
+     * 这个场景应该是一个彻底加载完成，直接可用的场景，
+     * 此时游戏内不应该有其他场景存在
+     * @param {Game} game 目标游戏
+     * @param {stage} stage 目标场景
+     */
+    _enterStage(game,stage){
+        //fixme load tiledmap
+        //create objects
+        console.log(stage);
+    }
 
     
 

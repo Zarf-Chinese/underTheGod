@@ -1,0 +1,66 @@
+[
+    {
+        "type": "amount",
+        "init": 1e3,
+        "float": 2e2,
+        "max": 1e9,
+        "inflex": 1e5,
+        "inflexPos": 0.7
+    },
+    {
+        "type": "morale",
+        "init": 60,
+        "float": 20,
+        "max": 5e2,
+        "inflex": 1e2,
+        "inflexPos": 0.6
+    },
+    {
+        "type": "fund",
+        "init": 1e4,
+        "float": 2e3,
+        "max": 1e9,
+        "inflex": 1e7,
+        "inflexPos": 0.6
+    },
+    {
+        "type": "rank",
+        "init": 50,
+        "float": 10,
+        "max": 1000,
+        "inflex": 100,
+        "inflexPos": 0.7
+    },
+    {
+        "type": "taxRate",
+        "init": 20,
+        "float": 3,
+        "max": 1000,
+        "inflex": 1000,
+        "inflexPos": 1
+    },
+    {
+        "type": "gdp",
+        "init": 1e5,
+        "float": 3e4,
+        "max": 1e10,
+        "inflex": 5e5,
+        "inflexPos": 0.5
+    },
+    {
+        "type": "population",
+        "init": 1e5,
+        "float": 3e4,
+        "max": 1e10,
+        "inflex": 5e5,
+        "inflexPos": 0.5
+    },
+    {
+        "type": "safety",
+        "init": 3e4,
+        "float": 5e3,
+        "max": 1e7,
+        "inflex": 6e4,
+        "inflexPos": 0.6
+    }
+]

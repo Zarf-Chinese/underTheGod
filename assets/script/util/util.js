@@ -7,5 +7,6 @@ var util={
     event:require("./event"),
     data:require("./data"),
     object:require("./object"),
+    array:require("./array"),
 }
 module.exports=util;

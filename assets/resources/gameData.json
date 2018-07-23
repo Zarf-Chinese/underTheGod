@@ -5,6 +5,8 @@
         "name":"bilibili",
         "csv":"test",
         "objects":[],
+        "attrAsset":"defaultAttr",
+        "objectAsset":"defaultObject",
         "map":"map_fantasyLand"
     }
 ]

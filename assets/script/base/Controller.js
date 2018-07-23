@@ -6,7 +6,7 @@
  * default          :default config name
  * _createByConfig  :(Type.Config)->Type
  */
-var Controller ={
+var Controller = {
     /**
      * 通过一个被注册过的类型名设置默认的类型配置
      * 若传入的类型名未被注册，则执行失败
@@ -34,12 +34,19 @@ var Controller ={
      * @return {Controller.Type.Config} 类型配置
      */
     getConfigByTypename(type) {
-        this.configs.forEach(config => {
-            if (config.type === type) {
-                return config;
-            }
+        return this.configs.find(config => {
+            return(config.type === type) 
         });
-        return null;
+    },
+    /**
+     * 删去该类型的配置
+     * @param {string} type 
+     */
+    removeConfig(type) {
+        let index = this.Configs.findIndex(value => { return value.type == type });
+        if (type(index) == "number") {
+            this.configs.splice(index, 1);
+        }
     },
     /**
      *获取某指定实例的属性类型配置
@@ -54,11 +61,15 @@ var Controller ={
      *注册一个类型配置
      *若已经存在相应的类型，则注册失败。
      * @param {Controller.Type.Config} config 类型配置
+     * @param {boolean} replace
      * @return {boolean} 是否注册成功
      */
-    registConfig(config) {
+    registConfig(config, replace) {
         if (this.getConfigByTypename(config.type)) {
-            return false;
+            if (!replace)
+                return false;
+            else
+                this.removeConfig(config.type);
         }
         this.configs.push(config);
         return true
@@ -89,6 +100,17 @@ var Controller ={
         instance.type = type;
         return instance;
     },
+    /**
+     * 重置配置，保留默认配置，删去其余配置。
+     */
+    resetAllConfig() {
+        for (let i = this.configs.length - 1; i >= 0; i--) {
+            //保留 default 配置，删除其余配置
+            if (this.configs[i].type !== this.default) {
+                this.configs.splice(i, 1);
+            }
+        }
+    }
 }
 
 module.exports = Controller;

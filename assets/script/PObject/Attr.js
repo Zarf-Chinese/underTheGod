@@ -11,8 +11,6 @@ var PObject = require("PObject");
  * 
  * 
  */
-
-
 var Attr = cc.Class({
     statics: {
         //类型配置
@@ -47,3 +45,4 @@ var Attr = cc.Class({
         this.delta = 0;
     }
 })
+module.exports=Attr;
