@@ -7,6 +7,7 @@ var Object = cc.Class({
             name: "ObjectConfig",
             extends: PObject,
             properties: {
+                key:-1,
                 type: "noName",
                 offset: cc.Vec2,
                 spriteFrame: "",
@@ -45,7 +46,7 @@ var Object = cc.Class({
         if(data.hasOwnProperty("attrs")){
             for (let index = 0; index < data.attrs.length; index++) {
                 const attr = data.attrs[index];
-                this.attrs.push(PObject.create(Attr,attr))
+                this.attrs.push(PObject.create(Attr,attr));
             }
         }
     },

@@ -21,6 +21,7 @@ var Game=cc.Class({
     //fixme
     properties: {
         //stageConfigs:[Stage.Config],
+        isPlaying:false,
     },
     _load(data){
         this.stageConfigs=[];

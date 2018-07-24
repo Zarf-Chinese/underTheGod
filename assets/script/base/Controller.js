@@ -43,8 +43,8 @@ var Controller = {
      * @param {string} type 
      */
     removeConfig(type) {
-        let index = this.Configs.findIndex(value => { return value.type == type });
-        if (type(index) == "number") {
+        let index = this.configs.findIndex(value => { return value.type == type });
+        if (typeof(index) == "number") {
             this.configs.splice(index, 1);
         }
     },

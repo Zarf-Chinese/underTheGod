@@ -1,7 +1,7 @@
 var Stage = require("../PObject/Stage")
 var Controller = require("../base/Controller");
 var ObjectController = require("./ObjectController");
-var AttrController=require("./AttrController")
+var AttrController = require("./AttrController")
 var Util = require("../util/util")
 var StageController = {
     context: null,
@@ -26,7 +26,7 @@ var StageController = {
         Stage.load(stage, config);
         //在进入场景时，执行更多加载任务
         this.context.Maid.listenToEvent("enterStage" + config.index, function () {
-            this.context.Maid.listenToEvent("attrConfigAssetLoaded"+config.attrAsset,function(){
+            this.context.Maid.listenToEvent("attrConfigAssetLoaded" + config.attrAsset, function () {
                 //为场景加载对象配置后，执行生成对象等任务
                 this.context.Maid.listenToEvent("objConfigAssetLoaded" + config.objectAsset, function () {
                     if (config.csv) {
@@ -54,7 +54,7 @@ var StageController = {
                 //加载 场景所需的对象配置
                 ObjectController.reloadConfig(config.objectAsset);
                 return true;
-            }.bind(this),1);
+            }.bind(this), 1);
             AttrController.loadConfig(config.attrAsset);
         }.bind(this), 1)
 
@@ -103,7 +103,6 @@ var StageController = {
      */
     addObjectsFromCsv(stage, csv) {
         let data = Util.data.getDataFromCSV(csv, function (data) { if (data) return Number.parseInt(data) }, '\n', ',', '/')
-        console.log(data);
         //考虑到 csv 中的对象横纵限制数量与csv对象横纵限制数量不符的情况，这里先将多有对象全部加载，之后再在加载地图时忽略、删去部分对象数据
         for (let _y = 0; _y < data.length; _y++) {
             let row = data[_y];
@@ -156,6 +155,41 @@ var StageController = {
     addObject(stage, object) {
         //fixme 检查是否出现了同类对象位置重合的情况
         stage.objects.push(object);
+    },
+
+    /**
+     * 加载目标场景的地图，
+     * 会触发 ("mapLoaded")的事件，并传入目标 stage 作为参数，请注意接收
+     * @param {Stage} stage 
+     */
+    loadMap(stage) {
+        cc.loader.loadRes("map/" + stage.map, cc.TiledMapAsset, function (event, tmxAsset) {
+            if (tmxAsset) {
+                let map = this.context.tiledMapNode.getComponent(cc.TiledMap);
+                map.tmxAsset = tmxAsset;
+                this.refreshMapAsset();
+                this.context.Maid.pushEvent("mapLoaded", stage);
+            }
+        }.bind(this))
+    },
+
+    /**
+     * 刷新 瓦片地图配置数据，
+     * 根据瓦片地图，重置部分环境参数
+     */
+    refreshMapAsset() {
+        let mapNode = this.context.tiledMapNode;
+        let map = mapNode.getComponent(cc.TiledMap);
+        this.context.tileAmount = cc.pFromSize(map.getMapSize());
+        this.context.baseMapLayer = map.getLayer("terrain");
+        this.context.tileSize = cc.pFromSize(map.getTileSize())
+        this.context.objMapLayer = map.getLayer("object");
+        let boundingBox=map.node.getBoundingBoxToWorld();
+        this.context.mapViewpointBorder=cc.rect(boundingBox.x,boundingBox.y,
+            boundingBox.width-this.context.viewRect.width,boundingBox.height-this.context.viewRect.height);
+        //由于 初始化时，tiledmap 处于屏幕中央，故无需设置初始视图点
+        //this.context.mapViewpoint=cc.pMult(cc.pFromSize(map.node.getContentSize()),0.5);
+        console.log(this.context)
     }
 }
 StageController.registConfig(new Stage.Config());

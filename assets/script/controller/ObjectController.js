@@ -27,6 +27,46 @@ var ObjectController = {
             return(value.key===key);
         })
     },
+    /**
+     * 根据深度创建一个对象层节点
+     * 将会检查是否存在该对象层。若已经存在，则不会进行任何操作。
+     * @param {number} zOrder 深度
+     */
+    addObjLayer(zOrder){
+        if(!this.context.objLayers[zOrder]){
+            //仅在 目标对象层不存在时新建
+            let objLayer=new cc.Node();
+            this.context.objLayers[zOrder]=objLayer;
+            objLayer.setLocalZOrder(zOrder);
+            objLayer.tag=zOrder;
+            this.context.Maid.pushEvent("newObjLayerAdded",zOrder);
+        }
+    },
+
+    /**
+     * 根据深度值获取相应对象层节点
+     * @param {number} zOrder 深度
+     * @return {cc.Node} 图像层节点
+     */
+    getObjectLayerByZOrder(zOrder){
+        if(!this.context.objLayers[zOrder]){
+            //add obj layer
+            ObjectController.addObjLayer(zOrder);
+            return ObjectController.getObjectLayerByZOrder(zOrder);
+        }
+        return this.context.objLayers[zOrder]
+    },
+    /**
+     * 获取该对象所对应的对象层节点
+     * @param {Object} object 
+     * @return {cc.Node} 图像层节点
+     */
+    getObjectLayer(object){
+        let config=ObjectController.getConfig(object)
+        if(config){
+            return ObjectController.getObjectLayerByZOrder()
+        }
+    },
 
 
 
@@ -41,6 +81,21 @@ var ObjectController = {
             //添加属性
             ObjectController.addAttrByType(object,attrType);
         })
+        //添加节点
+        ObjectController._initObjectNode(object,config);
+    },
+    
+    /**
+     * @private
+     * 初始化 对象所属的节点
+     * @param {Object} object 
+     * @param {Object.Config} config 
+     */
+    _initObjectNode(object,config){
+        let node=new cc.Node();
+        node.addComponent(cc.Sprite).spriteFrame=this.context.objConfigAtlas.getSpriteFrame(config.type);
+        ObjectController.getObjectLayerByZOrder(config.zOrder).addChild(node);
+        object.node=node;
     },
 
     /**
@@ -183,6 +238,7 @@ var ObjectController = {
     setTilePos(object,x,y){
         object.pos.x=x;
         object.pos.y=y;
+        this.context.Maid.pushEvent("objPosChanged",object);
     }
 }
 ObjectController.registConfig(new Object.Config());

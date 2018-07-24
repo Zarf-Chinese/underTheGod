@@ -167,6 +167,12 @@ var Maid = {
             //结束事件
             this.pushedEvents.splice(this.pushedEvents.indexOf(event),1);
         }
+    },
+    /**
+     * 是否正在玩游戏（处于场景中）
+     */
+    isInStage(){
+        return Maid.game && GameController.isPlaying(Maid.game);
     }
 }
 module.exports = Maid;

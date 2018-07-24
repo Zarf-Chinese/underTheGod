@@ -1,4 +1,4 @@
-var Object=require("Object");
+var Object=require("./Object");
 var PObject=require("PObject");
 var Stage=cc.Class({
     

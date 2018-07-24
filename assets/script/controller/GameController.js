@@ -1,13 +1,14 @@
 var Game = require("../PObject/Game");
-var StageController=require("./StageController");
+var StageController = require("./StageController");
+var ObjectController = require("./ObjectController")
 /**
  * 游戏控制器，
  * 由于不需要通过配置来生成游戏，顾不需要继承 Controller
  * Maid（游戏的核心管理）持有当前的游戏实例，并通过GameController 来实现对游戏的控制
  */
 var GameController = {
-    Type:Game,
-    context:null,
+    Type: Game,
+    context: null,
 
     /**
      * 进入目标游戏
@@ -33,10 +34,10 @@ var GameController = {
      * @param {Game} game 目标游戏
      * @param {number} stageIndex 场景序号
      */
-    getStageConfig(game,stageIndex){
-        return game.stageConfigs.find((v,i)=>{
-            return v.index==stageIndex;
-        },this);
+    getStageConfig(game, stageIndex) {
+        return game.stageConfigs.find((v, i) => {
+            return v.index == stageIndex;
+        }, this);
     },
 
     /**
@@ -47,7 +48,7 @@ var GameController = {
      */
     getReadyToSelectStage(game) {
         //获取选择场景的控件节点，其应该内置了一个 stageSelector 组件
-        let stageSelectorNode=this.context.stageSelectorNode;
+        let stageSelectorNode = this.context.stageSelectorNode;
         let stageSelector = stageSelectorNode.getComponent("stageSelector")
         if (!stageSelector) return;
         {
@@ -63,14 +64,14 @@ var GameController = {
      * @param {Game} game 目标游戏
      * @param {number} id 目标场景的 id
      */
-    enterStageById(game,id){
+    enterStageById(game, id) {
         //ImproveMe 后期可以加入切换画面
         //fixme 退出之前的场景
-        let stage=StageController.createByConfig(GameController.getStageConfig(game,id));
-        this.context.Maid.listenToEvent("stageReadyToEnter",function(){
-            GameController._enterStage(game,stage)
-        },1)
-        this.context.Maid.pushEvent("enterStage"+id);
+        let stage = StageController.createByConfig(GameController.getStageConfig(game, id));
+        this.context.Maid.listenToEvent("stageReadyToEnter", function () {
+            GameController._enterStage(game, stage)
+        }, 1)
+        this.context.Maid.pushEvent("enterStage" + id);
     },
     /**
      * 正式进入一个场景，
@@ -79,13 +80,32 @@ var GameController = {
      * @param {Game} game 目标游戏
      * @param {stage} stage 目标场景
      */
-    _enterStage(game,stage){
-        //fixme load tiledmap
-        //create objects
-        console.log(stage);
+    _enterStage(game, stage) {
+        this.context.Maid.listenToEvent("mapLoaded", function (_stage) {
+            //加载完成地图之后...
+            if (_stage !== stage) return false;
+            game.isPlaying = true;
+            console.log(stage);
+            //注册一个 添加对象图层 的事件监听器 , 以准备添入所有被注册的对象层
+            this.context.Maid.listenToEvent("newObjLayerAdded", function (zOrder) {
+                this.context.objMapLayer.node.addChild(ObjectController.getObjectLayerByZOrder(zOrder));
+                return true;
+            }.bind(this));
+            //注册一个 改变对象位置 的事件监听器 ，以准备设置对象节点的像素位置
+            this.context.Maid.listenToEvent("objPosChanged",function(object){
+                //fixme set object position
+                return true;
+            }.bind(this));
+        }.bind(this), 1);
+        StageController.loadMap(stage);
+
+    },
+
+    isPlaying(game) {
+        return game.isPlaying;
     }
 
-    
+
 
 
 }
