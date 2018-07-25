@@ -93,7 +93,14 @@ var ObjectController = {
      */
     _initObjectNode(object,config){
         let node=new cc.Node();
-        node.addComponent(cc.Sprite).spriteFrame=this.context.objConfigAtlas.getSpriteFrame(config.type);
+        let frame=this.context.objConfigAtlas.getSpriteFrame(config.frame);
+        let sprite= node.addComponent(cc.Sprite);
+        if(frame){
+            sprite.spriteFrame=frame;
+        }else
+        {
+            console.log("warning! spirte frame not found:%s",config.frame);
+        }
         ObjectController.getObjectLayerByZOrder(config.zOrder).addChild(node);
         object.node=node;
     },
@@ -239,7 +246,28 @@ var ObjectController = {
         object.pos.x=x;
         object.pos.y=y;
         this.context.Maid.pushEvent("objPosChanged",object);
-    }
+    },
+
+    /**
+     * 根据目标对象现有的地图位置，
+     * 刷新目标对象的像素位置
+     * @param {Object} object 
+     */
+    refreshObjPosition(object){
+        let config=ObjectController.getConfig(object)
+        let position =ObjectController.getObjPositionAt(object.pos,config);
+        object.node.position=position;
+    },
+    /**
+     * 
+     * @param {cc.Vec2} tilepos 地图位置
+     * @param {Object.Config} objConfig 对象类型
+     */
+    getObjPositionAt(tilepos,objConfig){
+        let offset=objConfig && objConfig.offset;
+        let ret= this.context.Maid.getTerrainPositionAt(this.context,tilepos);
+        return offset? ret.add(cc.v2(offset[0],offset[1])):ret;
+    },
 }
 ObjectController.registConfig(new Object.Config());
 ObjectController.setDefaultConfig("default");

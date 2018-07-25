@@ -86,16 +86,7 @@ var GameController = {
             if (_stage !== stage) return false;
             game.isPlaying = true;
             console.log(stage);
-            //注册一个 添加对象图层 的事件监听器 , 以准备添入所有被注册的对象层
-            this.context.Maid.listenToEvent("newObjLayerAdded", function (zOrder) {
-                this.context.objMapLayer.node.addChild(ObjectController.getObjectLayerByZOrder(zOrder));
-                return true;
-            }.bind(this));
-            //注册一个 改变对象位置 的事件监听器 ，以准备设置对象节点的像素位置
-            this.context.Maid.listenToEvent("objPosChanged",function(object){
-                //fixme set object position
-                return true;
-            }.bind(this));
+            this.context.Maid.initGameListener(this.context);
         }.bind(this), 1);
         StageController.loadMap(stage);
 

@@ -7,7 +7,8 @@
         "objects":[],
         "attrAsset":"defaultAttr",
         "objectAsset":"defaultObject",
-        "map":"map_fantasyLand"
+        "map":"map_fantasyLand",
+        "offset":{"x":10,"y":10}
     }
 ]
 }

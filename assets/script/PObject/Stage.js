@@ -3,10 +3,12 @@ var PObject=require("PObject");
 var Stage=cc.Class({
     
     statics:{
+        //对于stage 来说， 配置是不必要的。 这个 stage 有可能 由一个配置生成 也有可能由一个 游戏记录生成
         Config:cc.Class({
             name:"StageConfig",
             extends: PObject,
             properties:{
+                offset:cc.Vec2,
                 index:1000,
                 type:-1,
                 attrAsset:null,
@@ -38,6 +40,9 @@ var Stage=cc.Class({
         objectAsset:null,
         objects:[Object],
         map:null,
+        offset:{
+            default:cc.v2(0,0),
+        },
         /**
          * 游戏主人公所属阵营
          */
@@ -55,6 +60,7 @@ var Stage=cc.Class({
         this.objectAsset=data.objectAsset;
         this.attrAsset=data.attrAsset;
         this.map=data.map;
+        this.offset=data.offset||this.offset
     },
     _save(){
         let ret={};
@@ -66,6 +72,7 @@ var Stage=cc.Class({
         ret.objectAsset=this.objectAsset;
         ret.attrAsset=this.attrAsset;
         ret.map=this.map;
+        ret.offset=this.offset;
         return ret;
     }
 });

@@ -3,6 +3,8 @@ var Attr=require("Attr");
 var AttrController=require("../controller/AttrController")
 var Object = cc.Class({
     statics: {
+
+        //对于object 来说， 配置是必要的。 每个object 必然对应着唯一一个 配置
         Config: cc.Class({
             name: "ObjectConfig",
             extends: PObject,
@@ -10,7 +12,7 @@ var Object = cc.Class({
                 key:-1,
                 type: "noName",
                 offset: cc.Vec2,
-                spriteFrame: "",
+                frame: "",
                 zOrder: 0,
                 attrs: [cc.String],
             }
@@ -23,7 +25,7 @@ var Object = cc.Class({
     extends: PObject,
     properties: {
         type: "noName",
-        pos: cc.Vec2,
+        pos: cc.Vec2,       //地图位置，而非像素位置 
         node: null,
         attrs: [Attr],
     },

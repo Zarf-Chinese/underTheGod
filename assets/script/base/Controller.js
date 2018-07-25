@@ -1,5 +1,5 @@
 /**
- * 控制器的基元
+ * PObject 控制器的基元
  * 继承控制器需要实现的三个静态元素：
  * Type             :target class
  * configs          :config sets

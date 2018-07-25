@@ -167,7 +167,7 @@ var StageController = {
             if (tmxAsset) {
                 let map = this.context.tiledMapNode.getComponent(cc.TiledMap);
                 map.tmxAsset = tmxAsset;
-                this.refreshMapAsset();
+                this.refreshMapAsset(stage);
                 this.context.Maid.pushEvent("mapLoaded", stage);
             }
         }.bind(this))
@@ -177,7 +177,7 @@ var StageController = {
      * 刷新 瓦片地图配置数据，
      * 根据瓦片地图，重置部分环境参数
      */
-    refreshMapAsset() {
+    refreshMapAsset(stage) {
         let mapNode = this.context.tiledMapNode;
         let map = mapNode.getComponent(cc.TiledMap);
         this.context.tileAmount = cc.pFromSize(map.getMapSize());
@@ -185,12 +185,12 @@ var StageController = {
         this.context.tileSize = cc.pFromSize(map.getTileSize())
         this.context.objMapLayer = map.getLayer("object");
         let boundingBox=map.node.getBoundingBoxToWorld();
-        this.context.mapViewpointBorder=cc.rect(boundingBox.x,boundingBox.y,
+        this.context.mapViewpointBorder=cc.rect(boundingBox.x+stage.offset.x,boundingBox.y+stage.offset.y,
             boundingBox.width-this.context.viewRect.width,boundingBox.height-this.context.viewRect.height);
         //由于 初始化时，tiledmap 处于屏幕中央，故无需设置初始视图点
         //this.context.mapViewpoint=cc.pMult(cc.pFromSize(map.node.getContentSize()),0.5);
         console.log(this.context)
-    }
+    },
 }
 StageController.registConfig(new Stage.Config());
 StageController.setDefaultConfig("default");

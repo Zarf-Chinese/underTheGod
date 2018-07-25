@@ -1,3 +1,12 @@
+/**
+ * 全局事件列表：
+ * newObjLayerAdded
+ * objPosChanged
+ * tileSelected
+ * dayPassed
+ */
+
+
 var EventLisener = function (key, callback, life) {
     this.key = key;
     this.callback = callback;
@@ -13,6 +22,7 @@ var StageController= require("../controller/StageController")
 var GameController = require("../controller/GameController")
 var ObjectController=require("../controller/ObjectController")
 var AttrController=require("../controller/AttrController")
+var SeleController=require("../controller/SeleController").SeleController;
 /**
  * @SingleInstance
  * @Controller
@@ -21,6 +31,7 @@ var AttrController=require("../controller/AttrController")
  * ```
  * 处理游戏公开事件
  * 掌握游戏循环进程
+ * 初始化用户交互的核心功能
  * ```
  * @example
  * ``` js
@@ -44,6 +55,12 @@ var AttrController=require("../controller/AttrController")
  * ```
  */
 var Maid = {
+    value:{
+        accelerate:0.95,
+        clickIntensity:1,
+        onTouch:false,
+        mapViewpointDelta: cc.v2(0, 0)
+    },
     game: null,
     pushedEvents: [],
     eventlisteners: [],
@@ -73,7 +90,8 @@ var Maid = {
         //若未能加载游戏数据，则尝试从 gameData.json 中新建一份默认的游戏数据
         gameData ? this.pushEvent("afterGameDataLoaded", gameData) :
             cc.loader.loadRes("gameData", function (event, data) { Maid.pushEvent("afterGameDataLoaded", data) });
-
+        //初始化 地图交互
+        this._readyToInteraction(context);
 
     },
     /**
@@ -92,6 +110,7 @@ var Maid = {
      */
     update(context, dt) {
         this.dealWithAllEvents();
+        if (this.isInStage()) this._updateMapViewpoint(context,dt);
     },
     /**
      * 发布事件，支持给事件处理方法传递一个参数
@@ -173,6 +192,120 @@ var Maid = {
      */
     isInStage(){
         return Maid.game && GameController.isPlaying(Maid.game);
+    },
+
+    /**
+     * 初始化地图上的用户交互功能
+     * @param {context} context 
+     */
+    _readyToInteraction(context) {
+        context.tiledMapNode.on(cc.Node.EventType.TOUCH_START, function (event) { Maid.value.onTouch = true })
+        context.tiledMapNode.on(cc.Node.EventType.TOUCH_END, function (event) { 
+            //判断是否算一次点击
+            let delta=cc.v2(event.getLocation()).add(cc.v2(event.getStartLocation()).neg()).mag();
+            if(delta<Maid.value.clickIntensity){
+                let location=context.tiledMapNode.convertToNodeSpace(event.getLocation())
+                location.addSelf(context.mapViewpoint);
+                //使用这个绝对地图位置 来获取 地块位置
+                Maid.pushEvent("tileSelected",Maid.getTilePositionAt(context,location));
+            } 
+            Maid.value.onTouch = false; 
+        })
+        context.tiledMapNode.on(cc.Node.EventType.TOUCH_MOVE, function (event) {
+            //是否处于场景内
+            if (Maid.isInStage()) {
+                cc.pAddIn(Maid.value.mapViewpointDelta, event.getDelta().neg());
+            }
+        });
+    },
+    _updateMapViewpoint(context,dt) {
+        let newViewpoint = null;
+        //根据 积累的用户触摸偏移量，计算偏移速度
+        if (Maid.value.onTouch) {
+            context.mapViewpointSpeed = cc.pMult(Maid.value.mapViewpointDelta, 1 / dt);
+            Maid.value.mapViewpointDelta = cc.v2(0, 0);
+        } else {
+            let plength = cc.pLength(context.mapViewpointSpeed)
+            //速度过小时，将其忽略
+            if (plength < 1) return;
+            //摩擦减速
+            context.mapViewpointSpeed = cc.pMult(context.mapViewpointSpeed, Maid.value.accelerate);
+            //限速
+            if (plength > 2000) {
+                cc.pMultIn(context.mapViewpointSpeed, 2000 / plength);
+            }
+        }
+        //根据速度，执行视图的位移
+        newViewpoint = cc.pAdd(context.mapViewpoint, cc.pMult(context.mapViewpointSpeed, dt));
+        //边缘检查，防止视图移动到地图外
+        while (!cc.rectContainsPoint(context.mapViewpointBorder, newViewpoint)) {
+            //削减变化量，重新尝试
+            context.mapViewpointSpeed = cc.pMult(context.mapViewpointSpeed, 0.1);
+            newViewpoint = cc.pAdd(context.mapViewpoint, cc.pMult(context.mapViewpointSpeed, dt));
+        }
+        //视图点已经在安全界限之内
+        context.mapViewpoint = newViewpoint;
+    },
+
+    /**
+     * 根据上下文组件，初始化游戏事件监听器。
+     * @param {context} context 
+     */
+    initGameListener(context){
+        //注册一个 添加对象图层 的事件监听器 , 以准备添入所有被注册的对象层
+        this.listenToEvent("newObjLayerAdded", function (zOrder) {
+            let newLayer=ObjectController.getObjectLayerByZOrder(zOrder)
+            context.objMapLayer.node.addChild(newLayer);
+            return true;
+        });
+        //注册一个 改变对象位置 的事件监听器 ，以准备设置对象节点的像素位置
+        this.listenToEvent("objPosChanged",function(object){
+            ObjectController.refreshObjPosition(object)
+            return true;
+        });
+        this.listenToEvent("tileSelected",function(pos){
+            if(Maid.isInStage()){
+                SeleController.pushSelection(pos);
+            }
+            return true;
+        });
+        this.listenToEvent("dayPassed",function(){
+            //fixme pass one day;
+            return true;
+        });
+    },
+    /**
+     * 将一个以（0,0）为起点的绝对坐标转化为 以（0,0）为中心点的相对地图位置,
+     * @param {Context} context
+     * @param {cc.Vec2} pos 
+     * @returns {cc.Vec2} 相对地图位置
+     */
+    transformToMapPosition(context,pos){
+        let ret=cc.v2(pos)
+        ret.x-=context.baseMapLayer.node.width/2;
+        ret.y-=context.baseMapLayer.node.height/2;
+        return ret;
+    },
+    /**
+     * 根据地块位置获取该地块中心的相对地图位置
+     * @param {cc.Vec2} tilepos 地块位置
+     * @returns {cc.Vec2} 相对地图位置
+     */
+    getTerrainPositionAt(context,tilepos){
+        let ret=context.baseMapLayer.getPositionAt(tilepos).add(context.tileSize.div(2));
+        return Maid.transformToMapPosition(context,ret);
+    },
+    /**
+     * 根据绝对地图位置获取相应地快的地块位置
+     * @param {Context} context 
+     * @param {cc.Vec2} terrpos 绝对地图位置
+     * @returns {cc.Vec2} 地块位置
+     */
+    getTilePositionAt(context,terrpos){
+        //fixme get tilepos
+        console.log(terrpos);
+        let tilepos=terrpos;
+        return tilepos
     }
 }
 module.exports = Maid;
