@@ -23,6 +23,7 @@ var GameController = require("../controller/GameController")
 var ObjectController=require("../controller/ObjectController")
 var AttrController=require("../controller/AttrController")
 var SeleController=require("../controller/SeleController").SeleController;
+var PosController=require("../controller/PosController").PosController;
 /**
  * @SingleInstance
  * @Controller
@@ -72,6 +73,7 @@ var Maid = {
      */
     start(context) {
         //给予各类controller 赋予上下文
+        PosController.context=context;
         AttrController.context=context;
         ObjectController.context=context;
         StageController.context=context;
@@ -204,10 +206,8 @@ var Maid = {
             //判断是否算一次点击
             let delta=cc.v2(event.getLocation()).add(cc.v2(event.getStartLocation()).neg()).mag();
             if(delta<Maid.value.clickIntensity){
-                let location=context.tiledMapNode.convertToNodeSpace(event.getLocation())
-                location.addSelf(context.mapViewpoint);
                 //使用这个绝对地图位置 来获取 地块位置
-                Maid.pushEvent("tileSelected",Maid.getTilePositionAt(context,location));
+                Maid.pushEvent("tileSelected",PosController.touch2tile(event.getLocation()));
             } 
             Maid.value.onTouch = false; 
         })
@@ -274,38 +274,5 @@ var Maid = {
             return true;
         });
     },
-    /**
-     * 将一个以（0,0）为起点的绝对坐标转化为 以（0,0）为中心点的相对地图位置,
-     * @param {Context} context
-     * @param {cc.Vec2} pos 
-     * @returns {cc.Vec2} 相对地图位置
-     */
-    transformToMapPosition(context,pos){
-        let ret=cc.v2(pos)
-        ret.x-=context.baseMapLayer.node.width/2;
-        ret.y-=context.baseMapLayer.node.height/2;
-        return ret;
-    },
-    /**
-     * 根据地块位置获取该地块中心的相对地图位置
-     * @param {cc.Vec2} tilepos 地块位置
-     * @returns {cc.Vec2} 相对地图位置
-     */
-    getTerrainPositionAt(context,tilepos){
-        let ret=context.baseMapLayer.getPositionAt(tilepos).add(context.tileSize.div(2));
-        return Maid.transformToMapPosition(context,ret);
-    },
-    /**
-     * 根据绝对地图位置获取相应地快的地块位置
-     * @param {Context} context 
-     * @param {cc.Vec2} terrpos 绝对地图位置
-     * @returns {cc.Vec2} 地块位置
-     */
-    getTilePositionAt(context,terrpos){
-        //fixme get tilepos
-        console.log(terrpos);
-        let tilepos=terrpos;
-        return tilepos
-    }
 }
 module.exports = Maid;

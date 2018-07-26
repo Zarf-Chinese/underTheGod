@@ -60,7 +60,7 @@ var Stage=cc.Class({
         this.objectAsset=data.objectAsset;
         this.attrAsset=data.attrAsset;
         this.map=data.map;
-        this.offset=data.offset||this.offset
+        this.offset=cc.v2(data.offset);
     },
     _save(){
         let ret={};
@@ -72,7 +72,7 @@ var Stage=cc.Class({
         ret.objectAsset=this.objectAsset;
         ret.attrAsset=this.attrAsset;
         ret.map=this.map;
-        ret.offset=this.offset;
+        ret.offset={x:this.offset.x,y:this.offset.y};
         return ret;
     }
 });

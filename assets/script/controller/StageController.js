@@ -178,17 +178,21 @@ var StageController = {
      * 根据瓦片地图，重置部分环境参数
      */
     refreshMapAsset(stage) {
+        var posController=require ("./PosController").PosController;
         let mapNode = this.context.tiledMapNode;
         let map = mapNode.getComponent(cc.TiledMap);
         this.context.tileAmount = cc.pFromSize(map.getMapSize());
         this.context.baseMapLayer = map.getLayer("terrain");
         this.context.tileSize = cc.pFromSize(map.getTileSize())
         this.context.objMapLayer = map.getLayer("object");
-        let boundingBox=map.node.getBoundingBoxToWorld();
-        this.context.mapViewpointBorder=cc.rect(boundingBox.x+stage.offset.x,boundingBox.y+stage.offset.y,
-            boundingBox.width-this.context.viewRect.width,boundingBox.height-this.context.viewRect.height);
-        //由于 初始化时，tiledmap 处于屏幕中央，故无需设置初始视图点
-        //this.context.mapViewpoint=cc.pMult(cc.pFromSize(map.node.getContentSize()),0.5);
+        this.context._mapSize=cc.pFromSize(this.context.tiledMapNode.getContentSize())
+        this.context.mapSize=cc.v2(this.context._mapSize.x,this.context._mapSize.y+this.context.tileSize.y/4);
+        this.context.mapOffset=stage.offset;
+        this.context.tileOffset=cc.v2(0.5*this.context.tileSize.x,this.context.tileSize.y/2)
+        this.context.boxSize=cc.v2(this.context.tileSize.x/2,this.context.tileSize.y*3/4)
+        let boundingPoint=posController.touch2cam (posController.map2rel(cc.v2(0,0)));
+        this.context.mapViewpointBorder=cc.rect(boundingPoint.x,boundingPoint.y,
+            this.context.mapSize.x-this.context.viewRect.width,this.context.mapSize.y-this.context.viewRect.height);
         console.log(this.context)
     },
 }

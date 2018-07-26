@@ -18,7 +18,7 @@ var Context = cc.Class({
 
     properties: {
         Maid: null,
-        viewRect: cc.Vec2,
+        viewRect: cc.Rect,
         stageSelectorNode: {
             default: null,
             type: cc.Node
@@ -54,7 +54,9 @@ var Context = cc.Class({
         tileSize: cc.Vec2,
         //纹理地图中的地块横纵数量
         tileAmount: cc.Vec2,
-
+        mapSize:cc.Vec2,
+        mapOffset:cc.Vec2, //mappos 相对 _mappos 的偏移量
+        tileOffset:cc.Vec2, //tilepos(0,0) 的中心相对 mappos左上角 的偏移量
         objConfigAtlas: {
             default: null,
             type: cc.SpriteAtlas

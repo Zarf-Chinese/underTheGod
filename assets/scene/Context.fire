@@ -601,9 +601,11 @@
     "_enabled": true,
     "Maid": null,
     "viewRect": {
-      "__type__": "cc.Vec2",
+      "__type__": "cc.Rect",
       "x": 0,
-      "y": 0
+      "y": 0,
+      "width": 0,
+      "height": 0
     },
     "stageSelectorNode": {
       "__id__": 5
@@ -635,6 +637,21 @@
       "y": 0
     },
     "tileAmount": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 0
+    },
+    "mapSize": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 0
+    },
+    "mapOffset": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 0
+    },
+    "tileOffset": {
       "__type__": "cc.Vec2",
       "x": 0,
       "y": 0

@@ -1,6 +1,7 @@
 var Object = require("../PObject/Object")
 var Controller = require("../base/Controller");
 var AttrController= require("./AttrController");
+var PosController=require("./PosController").PosController;
 var ObjectController = {
     __proto__: Controller,
     Type: Object,//控制目标类型
@@ -249,8 +250,8 @@ var ObjectController = {
     },
 
     /**
-     * 根据目标对象现有的地图位置，
-     * 刷新目标对象的像素位置
+     * 根据目标对象现有的 tilepos，
+     * 刷新目标对象的 relpos
      * @param {Object} object 
      */
     refreshObjPosition(object){
@@ -259,13 +260,14 @@ var ObjectController = {
         object.node.position=position;
     },
     /**
-     * 
+     *  根据对象的配置获取对象的相对位置 relpos
      * @param {cc.Vec2} tilepos 地图位置
      * @param {Object.Config} objConfig 对象类型
+     * @return {cc.Vec2} relpos
      */
     getObjPositionAt(tilepos,objConfig){
         let offset=objConfig && objConfig.offset;
-        let ret= this.context.Maid.getTerrainPositionAt(this.context,tilepos);
+        let ret= PosController.tile2rel(tilepos);
         return offset? ret.add(cc.v2(offset[0],offset[1])):ret;
     },
 }
