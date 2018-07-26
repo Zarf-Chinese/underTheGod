@@ -74,6 +74,7 @@ var Maid = {
     start(context) {
         //给予各类controller 赋予上下文
         PosController.context=context;
+        SeleController.context=context;
         AttrController.context=context;
         ObjectController.context=context;
         StageController.context=context;
@@ -265,7 +266,7 @@ var Maid = {
         });
         this.listenToEvent("tileSelected",function(pos){
             if(Maid.isInStage()){
-                SeleController.pushSelection(pos);
+                SeleController.push(pos);
             }
             return true;
         });
