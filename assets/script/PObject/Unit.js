@@ -1,12 +1,12 @@
 var PObject = require("PObject")
 var Attr=require("Attr");
 var AttrController=require("../controller/AttrController")
-var Object = cc.Class({
+var Unit = cc.Class({
     statics: {
 
-        //对于object 来说， 配置是必要的。 每个object 必然对应着唯一一个 配置
+        //对于unit 来说， 配置是必要的。 每个unit 必然对应着唯一一个 配置
         Config: cc.Class({
-            name: "ObjectConfig",
+            name: "UnitConfig",
             extends: PObject,
             properties: {
                 key:-1,
@@ -21,7 +21,7 @@ var Object = cc.Class({
     ctor() {
         //  fixme this.node=...
     },
-    name: "Object",
+    name: "Unit",
     extends: PObject,
     properties: {
         type: "noName",
@@ -32,7 +32,7 @@ var Object = cc.Class({
     /**
      *通过一个配置初始化一个实例
      *
-     * @param {Object.Config} config
+     * @param {Unit.Config} config
      */
     _initByConfig(config){
 
@@ -105,3 +105,4 @@ var Object = cc.Class({
         }
     }
 })
+module.exports=Unit;

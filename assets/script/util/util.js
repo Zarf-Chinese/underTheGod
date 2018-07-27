@@ -6,7 +6,7 @@ var util={
     keymap:require("./keymap"),
     event:require("./event"),
     data:require("./data"),
-    object:require("./object"),
+    unit:require("./unit"),
     array:require("./array"),
 }
 module.exports=util;

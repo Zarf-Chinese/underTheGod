@@ -1,6 +1,6 @@
 var Stage = require("../PObject/Stage")
 var Controller = require("../base/Controller");
-var ObjectController = require("./ObjectController");
+var UnitController = require("./UnitController");
 var AttrController = require("./AttrController")
 var Util = require("../util/util")
 var StageController = {
@@ -28,14 +28,14 @@ var StageController = {
         this.context.Maid.listenToEvent("enterStage" + config.index, function () {
             this.context.Maid.listenToEvent("attrConfigAssetLoaded" + config.attrAsset, function () {
                 //为场景加载对象配置后，执行生成对象等任务
-                this.context.Maid.listenToEvent("objConfigAssetLoaded" + config.objectAsset, function () {
+                this.context.Maid.listenToEvent("unitConfigAssetLoaded" + config.unitAsset, function () {
                     if (config.csv) {
                         //若 csv存在，则试图从csv 中为场景添入自动化生成的对象
                         //csv 加载完成后，为 场景添入对象
                         this.context.Maid.listenToEvent("csvLoaded" + config.csv, function (data) {
                             if (data) {
-                                //get objects from csv
-                                this.addObjectsFromCsv(stage, data);
+                                //get units from csv
+                                this.addUnitsFromCsv(stage, data);
                             }
                             //完成加载场景
                             this.context.Maid.pushEvent("stageReadyToEnter");
@@ -52,7 +52,7 @@ var StageController = {
                     return true;
                 }.bind(this), 1);
                 //加载 场景所需的对象配置
-                ObjectController.reloadConfig(config.objectAsset);
+                UnitController.reloadConfig(config.unitAsset);
                 return true;
             }.bind(this), 1);
             AttrController.loadConfig(config.attrAsset);
@@ -101,7 +101,7 @@ var StageController = {
      * @param {Stage} stage 目标场景
      * @param {string} csv csvData
      */
-    addObjectsFromCsv(stage, csv) {
+    addUnitsFromCsv(stage, csv) {
         let data = Util.data.getDataFromCSV(csv, function (data) { if (data) return Number.parseInt(data) }, '\n', ',', '/')
         //考虑到 csv 中的对象横纵限制数量与csv对象横纵限制数量不符的情况，这里先将多有对象全部加载，之后再在加载地图时忽略、删去部分对象数据
         for (let _y = 0; _y < data.length; _y++) {
@@ -111,8 +111,8 @@ var StageController = {
                 for (let _x = 0; _x < row.length; _x++) {
                     let tileData = row[_x];
                     if (tileData && !Util.array.isDeepEmpty(tileData)) {
-                        tileData.forEach(objType => {
-                            StageController.addObjectByKey(stage, objType, _x, _y);
+                        tileData.forEach(unitType => {
+                            StageController.addUnitByKey(stage, unitType, _x, _y);
                         })
                     }
                 }
@@ -124,8 +124,8 @@ var StageController = {
                 for (let _x = 0; _x < this.context.tileAmount.x; _x++) {
                     let tileData = row[_x];
                     if (tileData && !Util.array.isDeepEmpty(tileData)) {
-                        tileData.forEach(objType => {
-                            StageController.addObjectByKey(objType, _x, _y);
+                        tileData.forEach(unitType => {
+                            StageController.addUnitByKey(unitType, _x, _y);
                         })
                     }
                 }
@@ -135,26 +135,26 @@ var StageController = {
      * 在某位置上根据一个已注册过的对象类型添入一个对象
      * fixme 考虑国别
      * @param {Stage} stage 目标场景
-     * @param {number} objKey 所需添入的对象的键值
+     * @param {number} unitKey 所需添入的对象的键值
      * @param {number} x 添入位置x
      * @param {number} y 添入位置y
      */
-    addObjectByKey(stage, objKey, x, y) {
-        let object = ObjectController.createByKey(objKey);
-        if (object) {
-            ObjectController.setTilePos(object, x, y);
-            StageController.addObject(stage, object);
+    addUnitByKey(stage, unitKey, x, y) {
+        let unit = UnitController.createByKey(unitKey);
+        if (unit) {
+            UnitController.setTilePos(unit, x, y);
+            StageController.addUnit(stage, unit);
         }
     },
 
     /**
      * 给目标场景添加一个对象 
      * @param {Stage} stage 目标场景
-     * @param {Object} object 要被添加的对象
+     * @param {Unit} unit 要被添加的对象
      */
-    addObject(stage, object) {
+    addUnit(stage, unit) {
         //fixme 检查是否出现了同类对象位置重合的情况
-        stage.objects.push(object);
+        stage.units.push(unit);
     },
 
     /**
@@ -184,7 +184,7 @@ var StageController = {
         this.context.tileAmount = cc.pFromSize(map.getMapSize());
         this.context.baseMapLayer = map.getLayer("terrain");
         this.context.tileSize = cc.pFromSize(map.getTileSize())
-        this.context.objMapLayer = map.getLayer("object");
+        this.context.unitMapLayer = map.getLayer("object");
         this.context._mapSize=cc.pFromSize(this.context.tiledMapNode.getContentSize())
         this.context.mapSize=cc.v2(this.context._mapSize.x,this.context._mapSize.y+this.context.tileSize.y/4);
         this.context.mapOffset=stage.offset;

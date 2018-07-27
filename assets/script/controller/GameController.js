@@ -1,6 +1,6 @@
 var Game = require("../PObject/Game");
 var StageController = require("./StageController");
-var ObjectController = require("./ObjectController")
+var UnitController = require("./UnitController")
 /**
  * 游戏控制器，
  * 由于不需要通过配置来生成游戏，顾不需要继承 Controller

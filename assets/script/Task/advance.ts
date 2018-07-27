@@ -2,7 +2,7 @@
 targetType :[
 "tile",         //targets:Array<cc.Vec2>地块位置
 "country",      //targets:Array<Unit> 国家对象
-"#type",        //targets:Array<Unit> 相应type的object
+"#type",        //targets:Array<Unit> 相应type的unit
 (stage:Stage,selections:Array<cc.Vec2>):Array<any>
 ]
 */

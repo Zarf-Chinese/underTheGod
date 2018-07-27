@@ -1,4 +1,4 @@
-var Object=require("./Object");
+var Unit=require("./Unit");
 var PObject=require("PObject");
 var Stage=cc.Class({
     
@@ -12,7 +12,7 @@ var Stage=cc.Class({
                 index:1000,
                 type:-1,
                 attrAsset:null,
-                objectAsset:null,
+                unitAsset:null,
                 name:"default",
                 /**
                  * 记录了基本的游戏对象，但并不记录游戏对象的属性的具体数值。
@@ -26,7 +26,7 @@ var Stage=cc.Class({
                 /**
                  * 非随机生成的游戏对象数据，记录了关于这个对象的所有属性
                  */
-                objects:[]
+                units:[]
             }
 
         })
@@ -37,8 +37,8 @@ var Stage=cc.Class({
     properties: {
         type:-1,
         attrAsset:null,
-        objectAsset:null,
-        objects:[Object],
+        unitAsset:null,
+        units:[Unit],
         map:null,
         offset:{
             default:cc.v2(0,0),
@@ -51,13 +51,13 @@ var Stage=cc.Class({
 
     _load(data){
         this.type=data.type;
-        this.objects=[];
-        if(data.hasOwnProperty("objects")){
-            data.objects.forEach(objectData => {
-                this.objects.push(PObject.create(Object,objectData))
+        this.units=[];
+        if(data.hasOwnProperty("units")){
+            data.units.forEach(unitData => {
+                this.units.push(PObject.create(Unit,unitData))
             });
         }
-        this.objectAsset=data.objectAsset;
+        this.unitAsset=data.unitAsset;
         this.attrAsset=data.attrAsset;
         this.map=data.map;
         this.offset=cc.v2(data.offset);
@@ -65,11 +65,11 @@ var Stage=cc.Class({
     _save(){
         let ret={};
         ret.type=this.type;
-        ret.objects=[];
-        this.objects.forEach(object=>{
-            ret.objects.push(PObject.save(object));
+        ret.units=[];
+        this.units.forEach(unit=>{
+            ret.units.push(PObject.save(unit));
         })
-        ret.objectAsset=this.objectAsset;
+        ret.unitAsset=this.unitAsset;
         ret.attrAsset=this.attrAsset;
         ret.map=this.map;
         ret.offset={x:this.offset.x,y:this.offset.y};

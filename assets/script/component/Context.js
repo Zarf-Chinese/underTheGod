@@ -46,18 +46,18 @@ var Context = cc.Class({
             type: cc.TiledLayer
         },
         //特指地图中的对象层组件
-        objMapLayer: {
+        unitMapLayer: {
             default: null,
             type: cc.TiledLayer,
         },
-        objLayers: [cc.Node],
+        unitLayers: [cc.Node],
         tileSize: cc.Vec2,
         //纹理地图中的地块横纵数量
         tileAmount: cc.Vec2,
         mapSize:cc.Vec2,
         mapOffset:cc.Vec2, //mappos 相对 _mappos 的偏移量
         tileOffset:cc.Vec2, //tilepos(0,0) 的中心相对 mappos左上角 的偏移量
-        objConfigAtlas: {
+        unitConfigAtlas: {
             default: null,
             type: cc.SpriteAtlas
         }

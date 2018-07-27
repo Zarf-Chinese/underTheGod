@@ -1,10 +1,10 @@
-var Object = require("../PObject/Object")
+var Unit = require("../PUnit/Unit")
 var Controller = require("../base/Controller");
 var AttrController= require("./AttrController");
 var PosController=require("./PosController").PosController;
-var ObjectController = {
+var UnitController = {
     __proto__: Controller,
-    Type: Object,//控制目标类型
+    Type: Unit,//控制目标类型
 
     configs: [],//类型配置集，内含一个默认类型配置
 
@@ -15,8 +15,8 @@ var ObjectController = {
      * @param {number} key 对象的键值
      */
     createByKey(key){
-        let config=ObjectController.getConfigByKey(key)
-        if(config)return ObjectController.createByConfig(config);
+        let config=UnitController.getConfigByKey(key)
+        if(config)return UnitController.createByConfig(config);
     },
 
     /**
@@ -34,12 +34,12 @@ var ObjectController = {
      * @param {number} zOrder 深度
      */
     addObjLayer(zOrder){
-        if(!this.context.objLayers[zOrder]){
+        if(!this.context.unitLayers[zOrder]){
             //仅在 目标对象层不存在时新建
-            let objLayer=new cc.Node();
-            this.context.objLayers[zOrder]=objLayer;
-            objLayer.setLocalZOrder(zOrder);
-            objLayer.tag=zOrder;
+            let unitLayer=new cc.Node();
+            this.context.unitLayers[zOrder]=unitLayer;
+            unitLayer.setLocalZOrder(zOrder);
+            unitLayer.tag=zOrder;
             this.context.Maid.pushEvent("newObjLayerAdded",zOrder);
         }
     },
@@ -49,23 +49,23 @@ var ObjectController = {
      * @param {number} zOrder 深度
      * @return {cc.Node} 图像层节点
      */
-    getObjectLayerByZOrder(zOrder){
-        if(!this.context.objLayers[zOrder]){
-            //add obj layer
-            ObjectController.addObjLayer(zOrder);
-            return ObjectController.getObjectLayerByZOrder(zOrder);
+    getUnitLayerByZOrder(zOrder){
+        if(!this.context.unitLayers[zOrder]){
+            //add unit layer
+            UnitController.addObjLayer(zOrder);
+            return UnitController.getUnitLayerByZOrder(zOrder);
         }
-        return this.context.objLayers[zOrder]
+        return this.context.unitLayers[zOrder]
     },
     /**
      * 获取该对象所对应的对象层节点
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @return {cc.Node} 图像层节点
      */
-    getObjectLayer(object){
-        let config=ObjectController.getConfig(object)
+    getUnitLayer(unit){
+        let config=UnitController.getConfig(unit)
         if(config){
-            return ObjectController.getObjectLayerByZOrder()
+            return UnitController.getUnitLayerByZOrder()
         }
     },
 
@@ -73,28 +73,28 @@ var ObjectController = {
 
     /**
      *通过一个配置初始化一个实例
-     * @param {Object} object
-     * @param {Object.Config} config
+     * @param {Unit} unit
+     * @param {Unit.Config} config
      */
-    initByConfig(object, config) {
-        object.type = config.type;
+    initByConfig(unit, config) {
+        unit.type = config.type;
         config.attrs.forEach(function(attrType){
             //添加属性
-            ObjectController.addAttrByType(object,attrType);
+            UnitController.addAttrByType(unit,attrType);
         })
         //添加节点
-        ObjectController._initObjectNode(object,config);
+        UnitController._initUnitNode(unit,config);
     },
     
     /**
      * @private
      * 初始化 对象所属的节点
-     * @param {Object} object 
-     * @param {Object.Config} config 
+     * @param {Unit} unit 
+     * @param {Unit.Config} config 
      */
-    _initObjectNode(object,config){
+    _initUnitNode(unit,config){
         let node=new cc.Node();
-        let frame=this.context.objConfigAtlas.getSpriteFrame(config.frame);
+        let frame=this.context.unitConfigAtlas.getSpriteFrame(config.frame);
         let sprite= node.addComponent(cc.Sprite);
         if(frame){
             sprite.spriteFrame=frame;
@@ -102,100 +102,100 @@ var ObjectController = {
         {
             console.log("warning! spirte frame not found:%s",config.frame);
         }
-        ObjectController.getObjectLayerByZOrder(config.zOrder).addChild(node);
-        object.node=node;
+        UnitController.getUnitLayerByZOrder(config.zOrder).addChild(node);
+        unit.node=node;
     },
 
     /**
      * 设置某属性的值，若属性不存在，则会创建该属性
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @param {string} attrType 
      * @param {number} value 新值
      */
-    setAttr(object,attrType,value){
-        let attr= ObjectController._getAttr(object,attrType);
+    setAttr(unit,attrType,value){
+        let attr= UnitController._getAttr(unit,attrType);
         if(attr){
             AttrController.setValue(attr,value);
         }else
         {
-            ObjectController._addAttrByType(object,attrType,value);
+            UnitController._addAttrByType(unit,attrType,value);
         }
     },
 
     /**
      * 检查是否该对象含有某种类型的属性
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @param {string} attrType 
      * @param {boolean} 是否含有该类型的属性
      */
-    hasAttr(object,attrType){
-        return true & ObjectController._getAttr(object,attrType);
+    hasAttr(unit,attrType){
+        return true & UnitController._getAttr(unit,attrType);
     },
 
     /**
      * @private
      * 获取某属性
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @param {string} attrType
      * @return {Attr} 
      */
-    _getAttr(object,attrType){
-        return object.attrs.find(attr=>{return attr.type==attrType});
+    _getAttr(unit,attrType){
+        return unit.attrs.find(attr=>{return attr.type==attrType});
     },
 
     /**
      * @private
      * 给某对象添加某属性
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @param {Attr} attr 
      */
-    _addAttr(object,attr){
-        object.attrs.push(attr);
+    _addAttr(unit,attr){
+        unit.attrs.push(attr);
     },
 
     /**
      * 给某对象添加相应类新的属性。
      * 如已经有该属性，则不会重复添加。
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @param {string} attrType 属性类型
      * @param {number} value 可选，在创建时赋予属性固定初始值
      */
-    addAttrByType(object,attrType,value){
-        if(ObjectController.hasAttr(object,attrType))return;
-        ObjectController._addAttrByType(object,attrType,value);
+    addAttrByType(unit,attrType,value){
+        if(UnitController.hasAttr(unit,attrType))return;
+        UnitController._addAttrByType(unit,attrType,value);
     },
     /**
      * @private
      * 给某对象添加相应类新的属性。
-     * @param {Object} object 
+     * @param {Unit} unit 
      * @param {string} attrType 属性类型
      * @param {number} value 可选，在创建时赋予属性固定初始值
      */
-    _addAttrByType(object,attrType,value){
+    _addAttrByType(unit,attrType,value){
         let config=AttrController.getConfigByTypename(attrType);
         if(config){
             let attr=AttrController.createByConfig(config);
             if(typeof(value)=="number")AttrController.setValue(attr,value);
-            ObjectController._addAttr(object,attr);
+            UnitController._addAttr(unit,attr);
         }
     },
 
     /**
      * 根据一个属性的配置创建一个属性实例
-     * @param {Object.Config} config 配置
-     * @return {Object}
+     * @param {Unit.Config} config 配置
+     * @return {Unit}
      */
     _createByConfig(config) {
-        let object = new Object();
-        this.initByConfig(object, config);
-        return object;
+        let unit = new Unit();
+        this.initByConfig(unit, config);
+        return unit;
     },
 
     /**
      *每度过一天，根据属性的变化量刷新属性的值
-     * @param {Object} object
+     * @param {Unit} unit
      */
-    pass(object) {
+    pass(unit) {
     },
 
     /**
@@ -204,14 +204,14 @@ var ObjectController = {
      */
     _loadConfigAsset(configUrl) {
         //加载对象配置 图片资源集
-        cc.loader.loadRes("object/" + configUrl, cc.SpriteAtlas,function (event, data) {
+        cc.loader.loadRes("unit/" + configUrl, cc.SpriteAtlas,function (event, data) {
             //加载 对象配置数据
             if (data) {
-                this.context.objConfigAtlas=data;
-                cc.loader.loadRes("object/" + configUrl + ".config", function (event, data) {
+                this.context.unitConfigAtlas=data;
+                cc.loader.loadRes("unit/" + configUrl + ".config", function (event, data) {
                     if (data) {
                         this._loadConfigs(data);
-                        this.context.Maid.pushEvent("objConfigAssetLoaded" + configUrl, data);
+                        this.context.Maid.pushEvent("unitConfigAssetLoaded" + configUrl, data);
                     }
                 }.bind(this));
             }
@@ -220,7 +220,7 @@ var ObjectController = {
 
     _loadConfigs(configAsset) {
         configAsset.forEach(function(elem){
-            ObjectController.registConfig(elem);
+            UnitController.registConfig(elem);
         })
     },
 
@@ -239,38 +239,38 @@ var ObjectController = {
 
     /**
      * 设置目标对象的 tile 坐标
-     * @param {Object} object 目标对象
+     * @param {Unit} unit 目标对象
      * @param {number} x 
      * @param {number} y 
      */
-    setTilePos(object,x,y){
-        object.pos.x=x;
-        object.pos.y=y;
-        this.context.Maid.pushEvent("objPosChanged",object);
+    setTilePos(unit,x,y){
+        unit.pos.x=x;
+        unit.pos.y=y;
+        this.context.Maid.pushEvent("unitPosChanged",unit);
     },
 
     /**
      * 根据目标对象现有的 tilepos，
      * 刷新目标对象的 relpos
-     * @param {Object} object 
+     * @param {Unit} unit 
      */
-    refreshObjPosition(object){
-        let config=ObjectController.getConfig(object)
-        let position =ObjectController.getObjPositionAt(object.pos,config);
-        object.node.position=position;
+    refreshObjPosition(unit){
+        let config=UnitController.getConfig(unit)
+        let position =UnitController.getObjPositionAt(unit.pos,config);
+        unit.node.position=position;
     },
     /**
      *  根据对象的配置获取对象的相对位置 relpos
      * @param {cc.Vec2} tilepos 地图位置
-     * @param {Object.Config} objConfig 对象类型
+     * @param {Unit.Config} unitConfig 对象类型
      * @return {cc.Vec2} relpos
      */
-    getObjPositionAt(tilepos,objConfig){
-        let offset=objConfig && objConfig.offset;
+    getObjPositionAt(tilepos,unitConfig){
+        let offset=unitConfig && unitConfig.offset;
         let ret= PosController.tile2rel(tilepos);
         return offset? ret.add(cc.v2(offset[0],offset[1])):ret;
     },
 }
-ObjectController.registConfig(new Object.Config());
-ObjectController.setDefaultConfig("default");
-module.exports = ObjectController;
+UnitController.registConfig(new Unit.Config());
+UnitController.setDefaultConfig("default");
+module.exports = UnitController;

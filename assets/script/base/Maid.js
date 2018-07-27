@@ -1,7 +1,7 @@
 /**
  * 全局事件列表：
  * newObjLayerAdded
- * objPosChanged
+ * unitPosChanged
  * tileSelected
  * dayPassed
  */
@@ -20,7 +20,7 @@ var GameDataItem = "test";
 var PObject = require("./PObject")
 var StageController= require("../controller/StageController")
 var GameController = require("../controller/GameController")
-var ObjectController=require("../controller/ObjectController")
+var UnitController=require("../controller/UnitController")
 var AttrController=require("../controller/AttrController")
 var SeleController=require("../controller/SeleController").SeleController;
 var PosController=require("../controller/PosController").PosController;
@@ -76,7 +76,7 @@ var Maid = {
         PosController.context=context;
         SeleController.context=context;
         AttrController.context=context;
-        ObjectController.context=context;
+        UnitController.context=context;
         StageController.context=context;
         GameController.context=context;
 
@@ -255,13 +255,13 @@ var Maid = {
     initGameListener(context){
         //注册一个 添加对象图层 的事件监听器 , 以准备添入所有被注册的对象层
         this.listenToEvent("newObjLayerAdded", function (zOrder) {
-            let newLayer=ObjectController.getObjectLayerByZOrder(zOrder)
-            context.objMapLayer.node.addChild(newLayer);
+            let newLayer=UnitController.getUnitLayerByZOrder(zOrder)
+            context.unitMapLayer.node.addChild(newLayer);
             return true;
         });
         //注册一个 改变对象位置 的事件监听器 ，以准备设置对象节点的像素位置
-        this.listenToEvent("objPosChanged",function(object){
-            ObjectController.refreshObjPosition(object)
+        this.listenToEvent("unitPosChanged",function(unit){
+            UnitController.refreshObjPosition(unit)
             return true;
         });
         this.listenToEvent("tileSelected",function(pos){

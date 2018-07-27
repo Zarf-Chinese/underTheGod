@@ -629,8 +629,8 @@
       "__id__": 16
     },
     "baseMapLayer": null,
-    "objMapLayer": null,
-    "objLayers": [],
+    "unitMapLayer": null,
+    "unitLayers": [],
     "tileSize": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -656,7 +656,7 @@
       "x": 0,
       "y": 0
     },
-    "objConfigAtlas": null,
+    "unitConfigAtlas": null,
     "_N$mapViewpoint": {
       "__type__": "cc.Vec2",
       "x": 0,

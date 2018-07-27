@@ -140,13 +140,13 @@
             <key>format</key>
             <integer>2</integer>
             <key>realTextureFileName</key>
-            <string>object.png</string>
+            <string>defaultUnit.png</string>
             <key>size</key>
             <string>{512,512}</string>
             <key>smartupdate</key>
             <string>$TexturePacker:SmartUpdate:bd6d48a742b639312e493f7fc9179d67:1/1$</string>
             <key>textureFileName</key>
-            <string>object.png</string>
+            <string>defaultUnit.png</string>
         </dict>
     </dict>
 </plist>

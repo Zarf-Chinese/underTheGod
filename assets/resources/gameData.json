@@ -4,9 +4,9 @@
         "type":0,
         "name":"bilibili",
         "csv":"test",
-        "objects":[],
+        "units":[],
         "attrAsset":"defaultAttr",
-        "objectAsset":"defaultObject",
+        "unitAsset":"defaultUnit",
         "map":"map_fantasyLand",
         "offset":{"x":10,"y":3}
     }
